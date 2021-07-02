@@ -1,0 +1,6 @@
+Client 
+    Add Language the Message 
+    Make Editor class component
+
+Server 
+    Add text to the room 

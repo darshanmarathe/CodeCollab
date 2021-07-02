@@ -23,6 +23,7 @@ function App() {
   }
   
   const [code, setCode] = useState('// write code here...')
+  const [userCount, setuserCount] = useState(0)
   const [language, setLanguage] = useState('javascript')
 
   const meetingCode = window.location.pathname === "/" ? makeId(8) : window.location.pathname.replace("/" , "");
@@ -39,11 +40,11 @@ function App() {
       console.log('connected');
     });
     socket.on('channel', channel => {
-        
-      console.log('channled');
+        console.log('channel' , channel)
+        setuserCount(channel.participants)
+        setCode(channel.text);
     });
     socket.on('coded', message => {
-      debugger;
       if(message.meetingCode === meetingCode)
             setCode(message.text);
     });
@@ -76,6 +77,7 @@ function App() {
     <>
       <input value={meetingCode} type="text" disabled="true" />
       <LanguagePicker value={language} onLanguageChange={(val) => onLanguageChange(val)} />
+      Users:{userCount}
       <br />
       <div style={{ width: '100%', border: '1px solid red' }}>
         <Editor
