@@ -17,6 +17,8 @@ function CreateChannel(code) {
     name: code,
     participants: 0,
     id: code,
+    language : 'javascript',
+    text : '//type some code here....',
     sockets: []
   }
 }
@@ -30,16 +32,14 @@ http.listen(PORT, () => {
 
 
 io.on('connection', (socket) => { // socket object may be used to send specific messages to the new connected client
-  console.log('new client connected');
-  socket.emit('connection', null);
   socket.on('channel-join', id => {
     let chan = STATIC_CHANNELS.find((x) => x.id === id)
     if (!chan) {
       chan = CreateChannel(id);
       chan.sockets.push(socket.id);
       chan.participants++;
-      io.emit('channel', chan);
       console.log("New Channel Added" , id)
+      io.emit('channel', chan);
       STATIC_CHANNELS.push(chan)
     } else {
       STATIC_CHANNELS.forEach(c => {
@@ -59,7 +59,8 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
         }
       });
     }
-     return id;
+    socket.emit('connection', null);
+    return id;
   });
   socket.on('coded', coded => {
     console.log("coded received");
