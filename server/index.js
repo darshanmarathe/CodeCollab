@@ -30,15 +30,15 @@ http.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
 });
 
-
 io.on('connection', (socket) => { // socket object may be used to send specific messages to the new connected client
+  console.log('connection made')
   socket.on('channel-join', id => {
     let chan = STATIC_CHANNELS.find((x) => x.id === id)
     if (!chan) {
       chan = CreateChannel(id);
       chan.sockets.push(socket.id);
       chan.participants++;
-      console.log("New Channel Added" , id)
+      console.log("New Channel Added" , chan)
       io.emit('channel', chan);
       STATIC_CHANNELS.push(chan)
     } else {
@@ -48,6 +48,7 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
             c.sockets.push(socket.id);
             c.participants++;
             io.emit('channel', c);
+            console.log("participants added" ,c)
           }
         } else {
           let index = c.sockets.indexOf(socket.id);
@@ -55,6 +56,7 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
             c.sockets.splice(index, 1);
             c.participants--;
             io.emit('channel', c);
+            console.log("participants removed" ,c)
           }
         }
       });
@@ -64,8 +66,19 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
   });
   socket.on('coded', coded => {
     console.log("coded received");
+    AddToChannel(coded);
     io.emit('coded', coded);
+    
   });
+
+  function AddToChannel(coded){
+    console.log(coded , "coded");
+    let chan = STATIC_CHANNELS.find((x) => x.id === coded.meetingCode)
+    if(chan)  {
+        chan.text = coded.text;
+        console.log(chan.id , chan.text)
+      }
+     }
 
   socket.on('disconnect', () => {
     STATIC_CHANNELS.forEach(c => {
