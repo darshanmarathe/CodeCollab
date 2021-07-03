@@ -2,12 +2,16 @@
 Code Collaboration for Microsoft teams
 
 
-#Whats New 1.0.1
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+## Whats New 1.0.1
     - Basic Sync Capabilities
     - Syntax highlighting with Monoco Editors
     - Change Language
     - Rooms Capability
-#Roadmap 
+
+
+## Roadmap 
     1.0.1 
         - Basic Sync Capabilities
         - Syntax highlighting with Monoco Editors
