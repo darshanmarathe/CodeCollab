@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import Editor from "@monaco-editor/react";
 import socketClient from "socket.io-client";
-const SERVER = "http://localhost:3001";
+const {REACT_APP_BACKEND } = process.env;
+const SERVER = REACT_APP_BACKEND;
 
 
 export default class EditorWrapper extends Component {
 
-    
+
     socket = null;
     editorRef = null;
     constructor(props) {
@@ -28,8 +29,8 @@ export default class EditorWrapper extends Component {
             console.log('connected');
         });
         this.socket.on('channel', channel => {
-            console.log('channel happened', channel)
-            this.setState({ code: channel.text , language:channel.language , meetingCode: channel.meetingCode})
+            if (channel.meetingCode === this.props.meetingCode)
+                this.setState({ code: channel.text , language:channel.language , meetingCode: channel.meetingCode})
         });
         this.socket.on('coded', message => {
              if (message.meetingCode === this.props.meetingCode)

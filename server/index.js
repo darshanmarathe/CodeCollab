@@ -1,8 +1,9 @@
-var app = require('express')();
+var express = require('express');
+var app = express();
 var http = require('http').createServer(app);
 var cors = require('cors')
-
-const PORT = 3001;
+var path  = require("path")  ;
+const PORT = process.env.PORT || 3000;
 var io = require('socket.io')(http, {
   cors: {
     origin: "*",
@@ -25,6 +26,13 @@ function CreateChannel(code) {
 
 
 app.use(cors())
+
+var  ServeFile = function(req, res) {
+  res.sendFile(path.join(__dirname, 'public/index.html'));
+}
+app.use(express.static(path.join(__dirname, 'public')))
+app.get('/', ServeFile);
+app.get('/:id', ServeFile);
 
 http.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
