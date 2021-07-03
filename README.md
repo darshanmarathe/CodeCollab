@@ -3,12 +3,16 @@ Code Collaboration for Microsoft teams
 
 
 #Whats New 1.0.1
-    - Basic sync capability
+    - Basic Sync Capabilities
+    - Syntax highlighting with Monoco Editors
+    - Change Language
+    - Rooms Capability
 #Roadmap 
     1.0.1 
         - Basic Sync Capabilities
         - Syntax highlighting with Monoco Editors
         - Change Language
+        - Rooms Capability
     1.0.2 
         - Build Imporvement Single Project to be hosted
         - Host the servivce 
