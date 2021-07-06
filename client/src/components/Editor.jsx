@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Editor from "@monaco-editor/react";
 import socketClient from "socket.io-client";
-const {REACT_APP_BACKEND } = process.env;
+const { REACT_APP_BACKEND } = process.env;
 const SERVER = REACT_APP_BACKEND;
 
 
@@ -12,13 +12,11 @@ export default class EditorWrapper extends Component {
     editorRef = null;
     constructor(props) {
         super(props);
-        this.state = { 
-            language: props.language, 
-            code: props.code, 
-            meetingCode: props.meetingCode, 
-            isFirstime : true
+        this.state = {
+            language: props.language,
+            code: props.code,
+            meetingCode: props.meetingCode,
         }
-        console.log(this.state)
         this.showValue.bind(this);
     }
 
@@ -30,11 +28,20 @@ export default class EditorWrapper extends Component {
         });
         this.socket.on('channel', channel => {
             if (channel.meetingCode === this.props.meetingCode)
-                this.setState({ code: channel.text , language:channel.language , meetingCode: channel.meetingCode})
+                this.setState({ code: channel.text, language: channel.language, meetingCode: channel.meetingCode })
+            if (this.props.language !== channel.language) {
+                this.props.onLanguageChanged(channel.language)
+            }
+
+            this.props.onUsersChanged(channel.participants)
+
         });
         this.socket.on('coded', message => {
-             if (message.meetingCode === this.props.meetingCode)
-                 this.setState({ code: message.text , language:message.language , meetingCode: message.meetingCode})
+            if (message.meetingCode === this.props.meetingCode)
+                this.setState({ code: message.text, language: message.language, meetingCode: message.meetingCode })
+            if (this.props.language !== message.language) {
+                this.props.onLanguageChanged(message.language)
+            }
         });
         this.socket.emit('channel-join', this.state.meetingCode, ack => {
             console.log('channel Joined', ack)
@@ -44,20 +51,16 @@ export default class EditorWrapper extends Component {
     showValue = (value, event) => {
         console.log(value, event)
         const text = value;
-        this.setState({code : text});
-        if(!this.state.isFirstime){
-            const mess = { 
-                meetingCode : this.props.meetingCode, 
-                text , 
-                language : this.state.language  
+        this.setState({ code: text });
+            const mess = {
+                meetingCode: this.props.meetingCode,
+                text,
+                language: this.state.language
             }
             console.log(mess)
             this.socket.emit('coded', mess);
-            console.log("Show value happned" , text  );
-        }else{
-            this.setState({isFirstime : false})
-        }
-       
+            console.log("Show value happned", text);
+    
     }
 
 
@@ -65,7 +68,7 @@ export default class EditorWrapper extends Component {
     render() {
         return (
             <div>
-
+{REACT_APP_BACKEND}
 
                 <Editor
                     height="100vh"

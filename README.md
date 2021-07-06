@@ -2,7 +2,6 @@
 Code Collaboration for Microsoft teams
 
 
-<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 ## Whats New 1.0.1
     - Basic Sync Capabilities
