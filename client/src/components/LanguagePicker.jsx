@@ -12,7 +12,7 @@ function LanguagePicker(props) {
         return <> {options} </>
     }
     return (
-        <select className="language-picker" value={supportedLanguages.find(x => x.name === props.value).id || 19} onChange={(e) => {
+        <select className="form-select" value={supportedLanguages.find(x => x.name === props.value).id || 19} onChange={(e) => {
             props.onLanguageChange(e.target.value)
         }}>
             {showOptions()}

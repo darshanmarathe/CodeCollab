@@ -1,6 +1,4 @@
 Client 
-    Add Language the Message 
-    Make Editor class component
-
+    Load the code from server when loaded from server.
 Server 
     Add text to the room 
