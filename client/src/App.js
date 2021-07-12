@@ -23,7 +23,7 @@ function App() {
   const code = '// write code here...';
   const [userCount, setuserCount] = useState(0)
   const [language, setLanguage] = useState('javascript')
-
+const [copied , setCopy] = useState("bi-clipboard")
   const meetingCode = window.location.pathname === "/" ? makeId(8) : window.location.pathname.replace("/", "");
   if (window.location.pathname === "/") {
     window.location.pathname = "/" + meetingCode
@@ -36,6 +36,23 @@ function App() {
 
   }
 
+  function copyStringToClipboard (str) {
+    // Create new element
+    var el = document.createElement('textarea');
+    // Set value (string to be copied)
+    el.value = str;
+    // Set non-editable to avoid focus and move outside of view
+    el.setAttribute('readonly', '');
+    el.style = {position: 'absolute', left: '-9999px'};
+    document.body.appendChild(el);
+    // Select text inside element
+    el.select();
+    // Copy text to clipboard
+    document.execCommand('copy');
+    // Remove temporary element
+    document.body.removeChild(el);
+ }
+
   return (
     <>
       <HeaderComponent />
@@ -45,10 +62,19 @@ function App() {
             <div className="position-sticky pt-3">
               <ul className="nav flex-column">
                 <li className="nav-item">
+               
+               <div style={{width:'100%'}}>
                   <a href={"/" + meetingCode} target="_blank" className="nav-link" aria-current="page">
-                    <span data-feather="home"></span>
-                    {meetingCode}
+                    {meetingCode} 
                   </a>
+                  <button title="Copy to clipboard" onClick={(e) => {
+                  e.stopPropagation();
+                    let url = window.location.href;
+                    copyStringToClipboard(url)
+                    setCopy("bi-clipboard-check")
+                  }} className={"bi " +  (copied)   }></button>
+                 
+                 </div>
                 </li>
                 <li className="nav-item">
                   <div className="nav-link" href="#">
