@@ -38,8 +38,6 @@ function CreateUser(userId) {
   }
   
 }
-
-
 app.use(cors())
 
 var  ServeFile = function(req, res) {
@@ -74,13 +72,16 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
             chan.users.push(CreateUser(socket.id))
             console.log("participants added" ,c)
             io.emit('channel', c);
+            socket.emit('userdata', Object.values(chan.users))
           }
         } else {
           let index = c.sockets.indexOf(socket.id);
           if (index != (-1)) {
             c.sockets.splice(index, 1);
             c.participants--;
+            console.log("before users" , chan.users)
             chan.users = chan.users.filter(x => x.userId != socket.id)
+            console.log("after users" , chan.users)
             console.log("participants removed" ,c)
             io.emit('channel', c);
           }
@@ -113,6 +114,7 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
       if (index != (-1)) {
         c.sockets.splice(index, 1);
         c.participants--;
+        c.users = c.users.filter(x => x.userId != socket.id)
         io.emit('channel', c);
       }
     });

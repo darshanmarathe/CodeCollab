@@ -33,6 +33,11 @@ export default class EditorWrapper extends Component {
     }
 
     componentDidMount() {
+        const users = {}  //user
+        const contentWidgets = {} //save monaco editor name contentWidgets - monaco editor의 이름 뜨는 위젯을 저장 
+        const decorations = {}    //save monaco editor cursor or selection decorations - monaco editor의 커서나 선택된 구역의 데코레이션을 저장
+        
+
         this.socket = socketClient(SERVER);
 
         this.socket.on('connection', () => {
