@@ -85,6 +85,7 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
             io.emit('channel', c);
           }
         }
+        
       });
     }
     socket.emit('connection', null);
