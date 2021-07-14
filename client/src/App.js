@@ -21,14 +21,21 @@ function App() {
   }
 
   const code = '// write code here...';
-  const [userCount, setuserCount] = useState(0)
+  const [loggedinUsers, setLoggedinUser] = useState([])
   const [language, setLanguage] = useState('javascript')
+  
+
+
 const [copied , setCopy] = useState("bi-clipboard")
   const meetingCode = window.location.pathname === "/" ? makeId(8) : window.location.pathname.replace("/", "");
   if (window.location.pathname === "/") {
     window.location.pathname = "/" + meetingCode
   }
 
+  function setUsersChange(users) {
+        setLoggedinUser(users)
+  }
+  
   function onLanguageChange(lang) {
 
     const langua = supportedLanguages.find((x) => x.id === parseInt(lang))
@@ -84,9 +91,20 @@ const [copied , setCopy] = useState("bi-clipboard")
                 <li className="nav-item">
                   <div className="nav-link" href="#">
                     <span data-feather="shopping-cart"></span>
-                    Users : <b> {userCount} </b>
+                    Users : <b> {loggedinUsers.length} </b>
+                    <ul>
+                      {
+                        loggedinUsers.map(u => {
+                          return <li style={{color : u.color , backgroundColor : 'black' , paddingLeft: '5px'}}>{u.name}</li>
+                        })
+                      }
+                    </ul>
                   </div>
                 </li>
+                {/* <li>
+                  Backend
+                  {REACT_APP_BACKEND}
+                </li> */}
                 <li className="nav-item">
                   <a target="_blank" href="https://github.com/darshanmarathe" className="nav-link">
                     <span data-feather="shopping-cart"></span>
@@ -108,7 +126,7 @@ const [copied , setCopy] = useState("bi-clipboard")
               language={language}
               meetingCode={meetingCode}
               code={code}
-              onUsersChanged={setuserCount}
+              onUsersChanged={setUsersChange}
               onLanguageChanged={setLanguage} />
           </div>
       </main>

@@ -4,6 +4,10 @@ var http = require('http').createServer(app);
 var cors = require('cors')
 var path  = require("path")  ;
 const PORT = process.env.PORT || 3000;
+
+const common  = require('./common/randomColor')
+const nameGen  = require('./common/namesgenerator')
+
 var io = require('socket.io')(http, {
   cors: {
     origin: "*",
@@ -20,8 +24,19 @@ function CreateChannel(code) {
     id: code,
     language : 'javascript',
     text : '//type some code here....',
-    sockets: []
+    sockets: [],
+    users : [],
   }
+}
+
+
+function CreateUser(userId) {
+  return {
+    userId,
+    name : nameGen.NameGenerator(),
+    color : common.getRandomColor()
+  }
+  
 }
 
 
@@ -46,7 +61,8 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
       chan = CreateChannel(id);
       chan.sockets.push(socket.id);
       chan.participants++;
-      console.log("New Channel Added" , chan)
+      chan.users.push(CreateUser(socket.id))
+      console.log("New Channel Added and user added" , chan)
       io.emit('channel', chan);
       STATIC_CHANNELS.push(chan)
     } else {
@@ -55,16 +71,18 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
           if (c.sockets.indexOf(socket.id) == (-1)) {
             c.sockets.push(socket.id);
             c.participants++;
-            io.emit('channel', c);
+            chan.users.push(CreateUser(socket.id))
             console.log("participants added" ,c)
+            io.emit('channel', c);
           }
         } else {
           let index = c.sockets.indexOf(socket.id);
           if (index != (-1)) {
             c.sockets.splice(index, 1);
             c.participants--;
-            io.emit('channel', c);
+            chan.users = chan.users.filter(x => x.userId != socket.id)
             console.log("participants removed" ,c)
+            io.emit('channel', c);
           }
         }
       });

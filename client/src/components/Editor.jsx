@@ -47,7 +47,7 @@ export default class EditorWrapper extends Component {
                 }
 
             }
-            this.props.onUsersChanged(channel.participants)
+            this.props.onUsersChanged(channel.users)
 
         });
         this.socket.on('coded', message => {
