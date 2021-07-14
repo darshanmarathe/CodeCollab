@@ -64,15 +64,18 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
       io.emit('channel', chan);
       STATIC_CHANNELS.push(chan)
     } else {
+
       STATIC_CHANNELS.forEach(c => {
         if (c.id === id) {
           if (c.sockets.indexOf(socket.id) == (-1)) {
             c.sockets.push(socket.id);
             c.participants++;
-            chan.users.push(CreateUser(socket.id))
+            let user =CreateUser(socket.id)
+            chan.users.push(user)
             console.log("participants added" ,c)
             io.emit('channel', c);
             socket.emit('userdata', Object.values(chan.users))
+            //socket.broadcast.emit('connected', {user}) 
           }
         } else {
           let index = c.sockets.indexOf(socket.id);

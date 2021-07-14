@@ -7,19 +7,29 @@ const SERVER = REACT_APP_BACKEND;
 
 export default class EditorWrapper extends Component {
 
-
+    users = {}
+    decorations= {};
     socket = null;
     editorRef = null;
     constructor(props) {
         super(props);
         this.state = {
+            monaco : null,
             language: props.language,
             code: props.code,
             meetingCode: props.meetingCode,
             isFirstTime: true,
-            clientId: null
+            clientId: null,
+            contentWidgets: {},
+            
         }
         this.showValue.bind(this);
+        //this.handleEditorDidMount.bind(this);
+    }
+
+    handleEditorDidMount = (arg1 , arg2 , arg3) =>{
+        debugger;
+        //this.monaco = arg2;
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -32,11 +42,58 @@ export default class EditorWrapper extends Component {
         }
     }
 
+    insertCSS(id, color) {
+
+        var style = document.createElement('style')
+        style.type = 'text/css'
+        style.innerHTML += '.' + id + ' { background-color:' + color + '}\n' //Selection Design
+        style.innerHTML += `
+        .${id}one { 
+            background: ${color};
+            width:2px !important 
+        }`  //cursor Design
+        document.getElementsByTagName('head')[0].appendChild(style)
+    }
+    /**
+     * add Widget to new user (display name) - 새로운 사용자를 위한 위젯을 추가한다 (이름을 출력하는 곳) 
+     * @param {User} e user
+     */
+    insertWidget(e) {
+        var contentWidgets = this.state.contentWidgets;
+        contentWidgets[e.userId] = {
+            domNode: null,
+            position: {
+                lineNumber: 0,
+                column: 0
+            },
+            getId: function () {
+                return 'content.' + e.user
+            },
+            getDomNode: function () {
+                if (!this.domNode) {
+                    this.domNode = document.createElement('div')
+                    this.domNode.innerHTML = e.user
+                    this.domNode.style.background = e.color
+                    this.domNode.style.color = 'black'
+                    this.domNode.style.opacity = 0.8
+                    this.domNode.style.width = 'max-content'
+                }
+                return this.domNode
+            },
+            getPosition: function () {
+                return {
+                    position: this.position,
+                   preference: [window.monaco.editor.ContentWidgetPositionPreference.ABOVE, window.monaco.editor.ContentWidgetPositionPreference.BELOW]
+                }
+            }
+        }
+        this.setState({ contentWidgets : contentWidgets });
+ 
+    }
+
+
     componentDidMount() {
-        const users = {}  //user
-        const contentWidgets = {} //save monaco editor name contentWidgets - monaco editor의 이름 뜨는 위젯을 저장 
-        const decorations = {}    //save monaco editor cursor or selection decorations - monaco editor의 커서나 선택된 구역의 데코레이션을 저장
-        
+             
 
         this.socket = socketClient(SERVER);
 
@@ -64,6 +121,17 @@ export default class EditorWrapper extends Component {
                 }
             }
         });
+        this.socket.on('userdata',  (data) => {     //Connected Client Status Event
+            debugger;
+                for (var i of data) {
+                    console.log(i,"i")
+                    this.users[i.userId] = i.color
+                    this.insertCSS(i.name, i.color)
+                    this.insertWidget(i)
+                    this.decorations[i.userId] = []
+                }
+           
+        })
         this.socket.emit('channel-join', this.state.meetingCode, ack => {
             console.log('channel Joined', ack)
         });
