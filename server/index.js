@@ -95,6 +95,12 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
     socket.emit('connection', null);
     return id;
   });
+  socket.on('selection', function (data) {       //Content Select Or Cursor Change Event
+    console.log('selection', data)
+    data.color = socket.color
+    data.user = socket.user
+    socket.broadcast.emit('selection', data) 
+  }) 
   socket.on('coded', coded => {
     console.log("coded received");
     AddToChannel(coded);

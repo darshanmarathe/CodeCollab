@@ -11,6 +11,7 @@ export default class EditorWrapper extends Component {
     decorations= {};
     socket = null;
     editorRef = null;
+    _editor = undefined;
     constructor(props) {
         super(props);
         this.state = {
@@ -27,9 +28,16 @@ export default class EditorWrapper extends Component {
         //this.handleEditorDidMount.bind(this);
     }
 
-    handleEditorDidMount = (arg1 , arg2 , arg3) =>{
+    handleEditorDidMount = (editor , monaco) =>{
         debugger;
-        //this.monaco = arg2;
+        this._editor = editor;
+        // editor.onDidChangeCursorPosition((e) => {
+        //     console.log(JSON.stringify(e));
+        // });
+        
+        editor.onDidChangeCursorSelection((e) => {
+            this.socket.emit('selection', e)
+        });
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
@@ -91,6 +99,63 @@ export default class EditorWrapper extends Component {
  
     }
 
+    changeSeleciton(e){
+        var selectionArray = []
+        if (e.selection.startColumn == e.selection.endColumn && e.selection.startLineNumber == e.selection.endLineNumber) { //if cursor - 커서일 때
+            e.selection.endColumn++
+            selectionArray.push({
+                range: e.selection,
+                options: {
+                    className: `${e.userId}one`,
+                    hoverMessage: {
+                        value: e.userId
+                    }
+                }
+            })
+    
+        } else {    //if selection - 여러개를 선택했을 때
+            selectionArray.push({   
+                range: e.selection,
+                options: {
+                    className: e.userId,
+                    hoverMessage: {
+                        value: e.userId
+                    }
+                }
+            })
+        }
+        for (let data of e.secondarySelections) {       //if select multi - 여러개를 선택했을 때
+            if (data.startColumn == data.endColumn && data.startLineNumber == data.endLineNumber) {
+                selectionArray.push({
+                    range: data,
+                    options: {
+                        className: `${e.userId}one`,
+                        hoverMessage: {
+                            value: e.userId
+                        }
+                    }
+                })
+            } else
+                selectionArray.push({
+                    range: data,
+                    options: {
+                        className: e.userId,
+                        hoverMessage: {
+                            value: e.userId
+                        }
+                    }
+                })
+        }
+        this.decorations[e.userId] = window.monaco.editor.deltaDecorations(this.decorations[e.userId], selectionArray)  //apply change - 변경내용을 적용시킴
+    }
+
+    changeWidgetPosition(e){
+        this.contentWidgets[e.userId].position.lineNumber = e.selection.endLineNumber
+        this.contentWidgets[e.userId].position.column = e.selection.endColumn
+    
+        window.monaco.editor.removeContentWidget(this.contentWidgets[e.userId])
+        window.monaco.editor.addContentWidget(this.contentWidgets[e.userId])
+    }
 
     componentDidMount() {
              
@@ -135,7 +200,13 @@ export default class EditorWrapper extends Component {
         this.socket.emit('channel-join', this.state.meetingCode, ack => {
             console.log('channel Joined', ack)
         });
+        this.socket.on('selection',  (data) => {    //change Selection Event
+            this.changeSeleciton(data)
+            this.changeWidgetPosition(data)
+        })
         this.setState({ isFirstTime: false })
+
+       
     }
 
     showValue = (value, event) => {
@@ -166,7 +237,7 @@ export default class EditorWrapper extends Component {
                     path={this.state.language}
                     defaultLanguage={this.state.language}
                     value={this.state.code}
-                    //defaultValue={code}
+                                        //defaultValue={code}
                     onMount={this.handleEditorDidMount}
                 />
             </div>
