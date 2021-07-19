@@ -59,7 +59,9 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
       chan = CreateChannel(id);
       chan.sockets.push(socket.id);
       chan.participants++;
-      chan.users.push(CreateUser(socket.id))
+      let user = CreateUser(socket.id);
+      chan.LastUserJoined = {name ,userId} = user
+      chan.users.push(user)
       console.log("New Channel Added and user added" , chan)
       io.emit('channel', chan);
       STATIC_CHANNELS.push(chan)
@@ -71,6 +73,7 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
             c.sockets.push(socket.id);
             c.participants++;
             let user =CreateUser(socket.id)
+            chan.LastUserJoined = {name ,userId} = user
             chan.users.push(user)
             console.log("participants added" ,c)
             io.emit('channel', c);
@@ -96,9 +99,9 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
     return id;
   });
   socket.on('selection', function (data) {       //Content Select Or Cursor Change Event
-    console.log('selection', data)
+    console.log('selection', data.meetingCode , data.userId )
     data.color = socket.color
-    data.user = socket.user
+    data.userId = socket.id
     socket.broadcast.emit('selection', data) 
   }) 
   socket.on('coded', coded => {

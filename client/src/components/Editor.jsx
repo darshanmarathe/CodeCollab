@@ -12,6 +12,7 @@ export default class EditorWrapper extends Component {
     socket = null;
     editorRef = null;
     _editor = undefined;
+    contentWidgets= {}
     constructor(props) {
         super(props);
         this.state = {
@@ -21,7 +22,6 @@ export default class EditorWrapper extends Component {
             meetingCode: props.meetingCode,
             isFirstTime: true,
             clientId: null,
-            contentWidgets: {},
             
         }
         this.showValue.bind(this);
@@ -29,14 +29,13 @@ export default class EditorWrapper extends Component {
     }
 
     handleEditorDidMount = (editor , monaco) =>{
-        debugger;
         this._editor = editor;
         // editor.onDidChangeCursorPosition((e) => {
         //     console.log(JSON.stringify(e));
         // });
         
         editor.onDidChangeCursorSelection((e) => {
-            this.socket.emit('selection', e)
+            this.socket.emit('selection', {event : e  , meetingCode : this.props.meetingCode , userId : this.state.clientId})
         });
     }
 
@@ -67,20 +66,19 @@ export default class EditorWrapper extends Component {
      * @param {User} e user
      */
     insertWidget(e) {
-        var contentWidgets = this.state.contentWidgets;
-        contentWidgets[e.userId] = {
+        this.contentWidgets[e.userId] = {
             domNode: null,
             position: {
                 lineNumber: 0,
                 column: 0
             },
             getId: function () {
-                return 'content.' + e.user
+                return 'content.' + e.userId
             },
             getDomNode: function () {
                 if (!this.domNode) {
                     this.domNode = document.createElement('div')
-                    this.domNode.innerHTML = e.user
+                    this.domNode.innerHTML = e.name
                     this.domNode.style.background = e.color
                     this.domNode.style.color = 'black'
                     this.domNode.style.opacity = 0.8
@@ -95,20 +93,20 @@ export default class EditorWrapper extends Component {
                 }
             }
         }
-        this.setState({ contentWidgets : contentWidgets });
- 
+   
     }
 
-    changeSeleciton(e){
+    changeSeleciton(data){
+        const e =  data.event
         var selectionArray = []
         if (e.selection.startColumn == e.selection.endColumn && e.selection.startLineNumber == e.selection.endLineNumber) { //if cursor - 커서일 때
             e.selection.endColumn++
             selectionArray.push({
                 range: e.selection,
                 options: {
-                    className: `${e.userId}one`,
+                    className: `${data.userId}one`,
                     hoverMessage: {
-                        value: e.userId
+                        value: data.userId
                     }
                 }
             })
@@ -117,9 +115,9 @@ export default class EditorWrapper extends Component {
             selectionArray.push({   
                 range: e.selection,
                 options: {
-                    className: e.userId,
+                    className: data.userId,
                     hoverMessage: {
-                        value: e.userId
+                        value: data.userId
                     }
                 }
             })
@@ -129,9 +127,9 @@ export default class EditorWrapper extends Component {
                 selectionArray.push({
                     range: data,
                     options: {
-                        className: `${e.userId}one`,
+                        className: `${data.userId}one`,
                         hoverMessage: {
-                            value: e.userId
+                            value: data.userId
                         }
                     }
                 })
@@ -139,22 +137,23 @@ export default class EditorWrapper extends Component {
                 selectionArray.push({
                     range: data,
                     options: {
-                        className: e.userId,
+                        className: data.userId,
                         hoverMessage: {
-                            value: e.userId
+                            value: data.userId
                         }
                     }
                 })
         }
-        this.decorations[e.userId] = window.monaco.editor.deltaDecorations(this.decorations[e.userId], selectionArray)  //apply change - 변경내용을 적용시킴
+        this.decorations[data.userId] = this._editor.deltaDecorations(this.decorations[data.userId], selectionArray)  //apply change - 변경내용을 적용시킴
     }
 
-    changeWidgetPosition(e){
-        this.contentWidgets[e.userId].position.lineNumber = e.selection.endLineNumber
-        this.contentWidgets[e.userId].position.column = e.selection.endColumn
+    changeWidgetPosition(data){
+        const e =  data.event
+        this.contentWidgets[data.userId].position.lineNumber = e.selection.endLineNumber
+        this.contentWidgets[data.userId].position.column = e.selection.endColumn
     
-        window.monaco.editor.removeContentWidget(this.contentWidgets[e.userId])
-        window.monaco.editor.addContentWidget(this.contentWidgets[e.userId])
+        this._editor.removeContentWidget(this.contentWidgets[data.userId])
+        this._editor.addContentWidget(this.contentWidgets[data.userId])
     }
 
     componentDidMount() {
@@ -171,6 +170,9 @@ export default class EditorWrapper extends Component {
                 this.setState({ code: channel.text, language: channel.language, meetingCode: channel.meetingCode })
                 if (this.props.language !== channel.language) {
                     this.props.onLanguageChanged(channel.language)
+                }else{
+                    //i am current user 
+                    this.props.onUserConnect(channel.LastUserJoined.name);
                 }
 
             }
@@ -187,7 +189,6 @@ export default class EditorWrapper extends Component {
             }
         });
         this.socket.on('userdata',  (data) => {     //Connected Client Status Event
-            debugger;
                 for (var i of data) {
                     console.log(i,"i")
                     this.users[i.userId] = i.color
@@ -200,9 +201,14 @@ export default class EditorWrapper extends Component {
         this.socket.emit('channel-join', this.state.meetingCode, ack => {
             console.log('channel Joined', ack)
         });
-        this.socket.on('selection',  (data) => {    //change Selection Event
-            this.changeSeleciton(data)
-            this.changeWidgetPosition(data)
+        this.socket.on('selection',  (message) => {    //change Selection Event
+            if (message.meetingCode === this.props.meetingCode
+                && message.userId !== this.state.clientId) {
+                    
+                        console.log(message)
+                     this.changeSeleciton(message)
+                    this.changeWidgetPosition(message)
+                }
         })
         this.setState({ isFirstTime: false })
 
