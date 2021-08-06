@@ -128,7 +128,11 @@ function App() {
                 language={language}
                 meetingCode={meetingCode}
                 code={code}
-                onUserConnect={(name) => setCurrentUser(name)}
+                onUserConnect={(name) => {
+                  if(CurrentUser === 'NA' ){
+                    setCurrentUser(name)
+                  }
+                }}
                 onUsersChanged={setUsersChange}
                 onLanguageChanged={setLanguage} />
             </div>

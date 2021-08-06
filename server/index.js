@@ -60,7 +60,9 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
       chan.sockets.push(socket.id);
       chan.participants++;
       let user = CreateUser(socket.id);
-      chan.LastUserJoined = {name ,userId} = user
+      chan.LastUserJoined = {name ,userId,} = user;
+      chan.LastUserJoined.meetingCode  =id;
+      console.log(chan.LastUserJoined, "chan.LastUserJoined")
       chan.users.push(user)
       console.log("New Channel Added and user added" , chan)
       io.emit('channel', chan);
@@ -73,12 +75,12 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
             c.sockets.push(socket.id);
             c.participants++;
             let user =CreateUser(socket.id)
-            chan.LastUserJoined = {name ,userId} = user
+            chan.LastUserJoined = {name ,userId } = user
+            chan.LastUserJoined.meetingCode  =id;
             chan.users.push(user)
             console.log("participants added" ,c)
             io.emit('channel', c);
-            socket.emit('userdata', Object.values(chan.users))
-            //socket.broadcast.emit('connected', {user}) 
+            socket.broadcast.emit('connected', {user}) 
           }
         } else {
           let index = c.sockets.indexOf(socket.id);

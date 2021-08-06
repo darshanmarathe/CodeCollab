@@ -167,12 +167,10 @@ export default class EditorWrapper extends Component {
         });
         this.socket.on('channel', channel => {
             if (channel.name === this.props.meetingCode) {
+                this.props.onUserConnect(channel.LastUserJoined.name);
                 this.setState({ code: channel.text, language: channel.language, meetingCode: channel.meetingCode })
                 if (this.props.language !== channel.language) {
                     this.props.onLanguageChanged(channel.language)
-                }else{
-                    //i am current user 
-                    this.props.onUserConnect(channel.LastUserJoined.name);
                 }
 
             }

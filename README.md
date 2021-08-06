@@ -9,8 +9,7 @@ Code Collaboration for Microsoft teams
     - Change Language
     - Rooms Capability
 
-
-## Roadmap 
+## ChangeLog
     1.0.1 
         - Basic Sync Capabilities
         - Syntax highlighting with Monoco Editors
@@ -18,7 +17,9 @@ Code Collaboration for Microsoft teams
         - Rooms Capability
     1.0.2 
         - Build Imporvement Single Project to be hosted
-        - Host the servivce 
+        - Host the servivce
+
+## Roadmap  
     1.0.3
         - Better UI Design 
         - Show Participent Count 
