@@ -191,6 +191,7 @@ export default class EditorWrapper extends Component {
                     console.log(i,"i")
                     this.users[i.userId] = i.color
                     this.insertCSS(i.name, i.color)
+                    debugger;
                     this.insertWidget(i)
                     this.decorations[i.userId] = []
                 }

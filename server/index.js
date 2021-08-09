@@ -80,6 +80,7 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
             chan.users.push(user)
             console.log("participants added" ,c)
             io.emit('channel', c);
+            socket.emit('userdata', Object.values(chan.users))
             socket.broadcast.emit('connected', {user}) 
           }
         } else {
