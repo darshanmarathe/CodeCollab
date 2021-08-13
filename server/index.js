@@ -15,6 +15,8 @@ var io = require('socket.io')(http, {
   }
 });
 
+
+
 var STATIC_CHANNELS = [];
 
 function CreateChannel(code) {

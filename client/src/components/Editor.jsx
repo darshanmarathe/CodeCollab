@@ -234,7 +234,7 @@ export default class EditorWrapper extends Component {
                 <Editor
                     height="100vh"
                     width="90vw"
-                    theme="vs-dark"
+                    theme="vs-light"
                     style={{ float: 'left' }}
                     onChange={this.showValue}
                     path={this.state.language}
