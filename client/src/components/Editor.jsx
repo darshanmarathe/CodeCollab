@@ -144,6 +144,7 @@ export default class EditorWrapper extends Component {
                     }
                 })
         }
+        //console.table(this.decorations , data.userId)
         this.decorations[data.userId] = this._editor.deltaDecorations(this.decorations[data.userId], selectionArray)  //apply change - 변경내용을 적용시킴
     }
 
@@ -162,7 +163,6 @@ export default class EditorWrapper extends Component {
         this.socket = socketClient(SERVER);
 
         this.socket.on('connection', () => {
-            console.log('connected');
             this.setState({ clientId: this.socket.id })
         });
         this.socket.on('channel', channel => {
@@ -187,8 +187,9 @@ export default class EditorWrapper extends Component {
             }
         });
         this.socket.on('userdata',  (data) => {     //Connected Client Status Event
-                for (var i of data) {
-                    console.log(i,"i")
+            
+            console.log("userdata" , data)
+            for (var i of data) {
                     this.users[i.userId] = i.color
                     this.insertCSS(i.userId, i.color)
                     this.insertWidget(i)
@@ -202,8 +203,6 @@ export default class EditorWrapper extends Component {
         this.socket.on('selection',  (message) => {    //change Selection Event
             if (message.meetingCode === this.props.meetingCode
                 && message.userId !== this.state.clientId) {
-                    
-                        console.log(message)
                      this.changeSeleciton(message)
                     this.changeWidgetPosition(message)
                 }
