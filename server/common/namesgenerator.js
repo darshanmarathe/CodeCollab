@@ -585,9 +585,11 @@ let right = [
 
 let randnum = (n) => Math.floor(Math.random() * (n + 1));
 
-let NameGenerator =  (sep = '_') =>
-  left[randnum(left.length)] + sep + right[randnum(right.length)];
+// let NameGenerator =  (sep = '_') =>
+//   left[randnum(left.length)] + sep + right[randnum(right.length)];
 
+let NameGenerator =  (sep = '_') =>
+     right[randnum(right.length)];
 
 module.exports = {
   NameGenerator
