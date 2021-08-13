@@ -144,7 +144,7 @@ export default class EditorWrapper extends Component {
                     }
                 })
         }
-        //console.table(this.decorations , data.userId)
+        console.table(this.decorations , data.userId)
         this.decorations[data.userId] = this._editor.deltaDecorations(this.decorations[data.userId], selectionArray)  //apply change - 변경내용을 적용시킴
     }
 
