@@ -163,9 +163,11 @@ export default class EditorWrapper extends Component {
         this.socket = socketClient(SERVER);
 
         this.socket.on('connection', () => {
+            console.info('connection')
             this.setState({ clientId: this.socket.id })
         });
         this.socket.on('channel', channel => {
+            console.info('channel' , channel);
             if (channel.name === this.props.meetingCode) {
                 this.props.onUserConnect(channel.LastUserJoined.name);
                 this.setState({ code: channel.text, language: channel.language, meetingCode: channel.meetingCode })
@@ -178,6 +180,7 @@ export default class EditorWrapper extends Component {
 
         });
         this.socket.on('coded', message => {
+            console.info('coded' , message);
             if (message.meetingCode === this.props.meetingCode
                 && message.clientId !== this.state.clientId) {
                 this.setState({ code: message.text, language: message.language, meetingCode: message.meetingCode })
@@ -201,6 +204,7 @@ export default class EditorWrapper extends Component {
             console.log('channel Joined', ack)
         });
         this.socket.on('selection',  (message) => {    //change Selection Event
+            console.info('selection' , message);
             if (message.meetingCode === this.props.meetingCode
                 && message.userId !== this.state.clientId) {
                      this.changeSeleciton(message)
