@@ -160,7 +160,11 @@ export default class EditorWrapper extends Component {
     componentDidMount() {
              
 
-        this.socket = socketClient(SERVER);
+        this.socket = socketClient(SERVER , {
+            reconnection: true, // Whether to reconnect automatically (default: true)
+            reconnectionDelay: 500, // Number of reconnection attempts before giving (default: Infinity)
+            reconnectionAttempts: 10, // How long to initially wait before attempting a new reconnection (default: 1000)
+        });
 
         this.socket.on('connection', () => {
             console.info('connection')

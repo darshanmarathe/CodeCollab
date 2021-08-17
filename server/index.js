@@ -12,7 +12,10 @@ var io = require('socket.io')(http, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"]
-  }
+  },
+  pingInterval: 2000, // How many ms before the client sends a new ping packet
+  pingTimeout : 5000 // How many ms without a pong packet to consider the connection closed.
+
 });
 
 
