@@ -31,12 +31,21 @@ function CreateChannel(code) {
   }
 }
 
+var colors = [  
+  '#DDFFAA',
+  '#95E0C8',
+  '#E18060',
+  '#FFCBA4',
+  '#90f867'
+] 
 
-function CreateUser(userId) {
+
+
+function CreateUser(userId, userCount) {
   return {
     userId,
     name : nameGen.NameGenerator(),
-    color : common.getRandomColor()
+    color : colors[userCount]
   }
   
 }
@@ -61,7 +70,7 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
       chan = CreateChannel(id);
       chan.sockets.push(socket.id);
       chan.participants++;
-      let user = CreateUser(socket.id);
+      let user = CreateUser(socket.id, chan.users.length );
       chan.LastUserJoined = {name ,userId,} = user;
       chan.LastUserJoined.meetingCode  =id;
       console.log(chan.LastUserJoined, "chan.LastUserJoined")
@@ -78,7 +87,7 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
           if (c.sockets.indexOf(socket.id) == (-1)) {
             c.sockets.push(socket.id);
             c.participants++;
-            let user =CreateUser(socket.id)
+            let user =CreateUser(socket.id, chan.users.length)
             chan.LastUserJoined = {name ,userId } = user
             chan.LastUserJoined.meetingCode  =id;
             chan.users.push(user)
