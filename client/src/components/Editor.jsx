@@ -188,6 +188,8 @@ export default class EditorWrapper extends Component {
             if (message.meetingCode === this.props.meetingCode
                 && message.clientId !== this.state.clientId) {
                 this.setState({ code: message.text, language: message.language, meetingCode: message.meetingCode })
+             debugger;
+                this._editor.getModel().applyEdits(message.event.changes)
                 if (this.props.language !== message.language) {
                     this.props.onLanguageChanged(message.language)
                 }
@@ -223,15 +225,16 @@ export default class EditorWrapper extends Component {
     showValue = (value, event) => {
         const text = value;
         this.setState({ code: text });
-        const mess = {
+        const message = {
             meetingCode: this.props.meetingCode,
             text,
             language: this.state.language,
-            clientId: this.state.clientId
+            clientId: this.state.clientId,
+            event
         }
 
 
-        this.socket.emit('coded', mess);
+        this.socket.emit('coded', message);
     }
 
 
