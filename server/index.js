@@ -20,6 +20,8 @@ var io = require('socket.io')(http, {
 
 
 
+var interval = null;
+
 var STATIC_CHANNELS = [];
 
 function CreateChannel(code) {
@@ -68,6 +70,7 @@ http.listen(PORT, () => {
 io.on('connection', (socket) => { // socket object may be used to send specific messages to the new connected client
   console.log('connection made')
   socket.on('channel-join', id => {
+    if (STATIC_CHANNELS.length ===0)  StartTrack();
     let chan = STATIC_CHANNELS.find((x) => x.id === id)
     if (!chan) {
       chan = CreateChannel(id);
@@ -136,8 +139,9 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
       }
      }
 
+let chan_to_be_removed = null
   socket.on('disconnect', () => {
-    STATIC_CHANNELS.forEach(c => {
+    STATIC_CHANNELS.forEach((c , i) => {
       let index = c.sockets.indexOf(socket.id);
       if (index != (-1)) {
         c.sockets.splice(index, 1);
@@ -145,7 +149,16 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
         c.users = c.users.filter(x => x.userId != socket.id)
         io.emit('channel', c);
       }
+      console.log(c.participants,"c.participants")
+      if(c.participants === 0){
+        chan_to_be_removed = c;
+      }
     });
+    if(chan_to_be_removed != null){
+      STATIC_CHANNELS = STATIC_CHANNELS.filter(chan => chan.name !== chan_to_be_removed.name);
+    }
+    if(STATIC_CHANNELS.length === 0)
+      StopTrack();
   });
 
 });
@@ -158,3 +171,18 @@ app.get('/getChannels', (req, res) => {
     channels: STATIC_CHANNELS
   })
 });
+
+
+function StartTrack()
+{
+  interval = setInterval(() => {
+    console.log(STATIC_CHANNELS.length , "STATIC_CHANNELS")
+  }, 60 * 1000)
+}
+
+
+
+function StopTrack()
+{
+  clearInterval(interval)
+}
