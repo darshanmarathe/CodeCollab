@@ -1,4 +1,5 @@
 cd client 
+call npx browserslist@latest --update-db
 call npm run build 
 cd ..
 cd server
