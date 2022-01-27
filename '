@@ -1,0 +1,32 @@
+Some code changes
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Committer: Marathe <darshan.marathe@philips.com>
+#
+# On branch main
+# Your branch is up to date with 'origin/main'.
+#
+# Changes to be committed:
+#	modified:   DeployUIChanges.bat
+#	modified:   client/package-lock.json
+#	modified:   client/yarn.lock
+#	new file:   index.html
+#	new file:   index.js
+#	new file:   package.json
+#	new file:   server/.gitignore
+#	modified:   server/public/asset-manifest.json
+#	modified:   server/public/index.html
+#	new file:   server/public/static/css/main.5739ad41.chunk.css
+#	new file:   server/public/static/css/main.5739ad41.chunk.css.map
+#	new file:   server/public/static/js/2.38a6670e.chunk.js
+#	new file:   server/public/static/js/2.38a6670e.chunk.js.LICENSE.txt
+#	new file:   server/public/static/js/2.38a6670e.chunk.js.map
+#	new file:   server/public/static/js/3.a58fa225.chunk.js
+#	new file:   server/public/static/js/3.a58fa225.chunk.js.map
+#	new file:   server/public/static/js/main.d8bc1652.chunk.js
+#	new file:   server/public/static/js/main.d8bc1652.chunk.js.map
+#	new file:   server/public/static/js/runtime-main.c8699522.js
+#	new file:   server/public/static/js/runtime-main.c8699522.js.map
+#	new file:   style.css
+ #
