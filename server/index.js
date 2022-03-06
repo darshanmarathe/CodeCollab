@@ -70,7 +70,7 @@ http.listen(PORT, () => {
 io.on('connection', (socket) => { // socket object may be used to send specific messages to the new connected client
   console.log('connection made')
   socket.on('channel-join', id => {
-    if (STATIC_CHANNELS.length ===0)  StartTrack();
+    //if (STATIC_CHANNELS.length ===0)  StartTrack();
     let chan = STATIC_CHANNELS.find((x) => x.id === id)
     if (!chan) {
       chan = CreateChannel(id);
