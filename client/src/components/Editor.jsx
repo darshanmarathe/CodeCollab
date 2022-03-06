@@ -248,16 +248,18 @@ export default class EditorWrapper extends Component {
   showValue = (value, event) => {
     const text = value;
     this.setState({ code: text });
-    const message = {
-      meetingCode: this.props.meetingCode,
-      text,
-      language: this.state.language,
-      clientId: this.state.clientId,
-      event,
-    };
+    
+    if (!this.isTooEarly) {
+        const message = {
+          meetingCode: this.props.meetingCode,
+          text,
+          language: this.state.language,
+          clientId: this.state.clientId,
+          event,
+        };
+        this.socket.emit("coded", message);
+    }
 
-    if (!this.isTooEarly) this.socket.emit("coded", message);
-    this.SetTooEarly();
   };
 
   render() {
