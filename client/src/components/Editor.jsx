@@ -12,7 +12,11 @@ export default class EditorWrapper extends Component {
     socket = null;
     editorRef = null;
     _editor = undefined;
-    contentWidgets= {}
+    contentWidgets= {};
+    isTooEarly = false;
+
+
+
     constructor(props) {
         super(props);
         this.state = {
@@ -28,11 +32,16 @@ export default class EditorWrapper extends Component {
         //this.handleEditorDidMount.bind(this);
     }
 
+    SetTooEarly = () => {
+        setTimeout(() => {
+            isTooEarly : !isTooEarly;
+        }, 1000);
+        this.SetTooEarly();
+    }
+
     handleEditorDidMount = (editor , monaco) =>{
         this._editor = editor;
-        // editor.onDidChangeCursorPosition((e) => {
-        //     console.log(JSON.stringify(e));
-        // });
+    
         
         editor.onDidChangeCursorSelection((e) => {
             this.socket.emit('selection', {event : e  , meetingCode : this.props.meetingCode , userId : this.state.clientId})
@@ -184,11 +193,10 @@ export default class EditorWrapper extends Component {
 
         });
         this.socket.on('coded', message => {
-            console.info('coded' , message);
             if (message.meetingCode === this.props.meetingCode
                 && message.clientId !== this.state.clientId) {
                 this.setState({ code: message.text, language: message.language, meetingCode: message.meetingCode })
-             debugger;
+   
                 this._editor.getModel().applyEdits(message.event.changes)
                 if (this.props.language !== message.language) {
                     this.props.onLanguageChanged(message.language)
@@ -197,7 +205,6 @@ export default class EditorWrapper extends Component {
         });
         this.socket.on('userdata',  (data) => {     //Connected Client Status Event
             
-            console.log("userdata" , data)
             for (var i of data) {
                     this.users[i.userId] = i.color
                     this.insertCSS(i.userId, i.color)
@@ -233,9 +240,10 @@ export default class EditorWrapper extends Component {
             event
         }
 
-
-        this.socket.emit('coded', message);
-    }
+    if(!this.isTooEarly)
+            this.socket.emit('coded', message);
+            this.SetTooEarly();
+        }
 
 
 
