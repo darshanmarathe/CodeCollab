@@ -112,6 +112,7 @@ function App() {
                     <span data-feather="shopping-cart"></span>
                     Developed by : <b>
                       Darshan Marathe!!
+                      UI Version : 1.0.0
                     </b>
                   </a>
                 </li>
