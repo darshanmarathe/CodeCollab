@@ -103,18 +103,21 @@ function App() {
                     </ul>
                   </div>
                 </li>
-                {/* <li>
-                  Backend
-                  {REACT_APP_BACKEND}
-                </li> */}
+                  <li>
+                    Backend
+                    {REACT_APP_BACKEND}
+                  </li>
                 <li className="nav-item">
                   <a target="_blank" href="https://github.com/darshanmarathe" className="nav-link">
                     <span data-feather="shopping-cart"></span>
                     Developed by : <b>
-                      Darshan Marathe!!
-                      UI Version : 1.0.0
+                      Darshan Marathe!! <br />
+                     
                     </b>
                   </a>
+                </li>
+                <li>
+                UI Version : 1.0.0
                 </li>
               </ul>
 
