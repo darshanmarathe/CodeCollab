@@ -103,10 +103,10 @@ function App() {
                     </ul>
                   </div>
                 </li>
-                  <li>
+                  {/* <li>
                     Backend
                     {REACT_APP_BACKEND}
-                  </li>
+                  </li> */}
                 <li className="nav-item">
                   <a target="_blank" href="https://github.com/darshanmarathe" className="nav-link">
                     <span data-feather="shopping-cart"></span>
@@ -117,7 +117,7 @@ function App() {
                   </a>
                 </li>
                 <li>
-                UI Version : 1.0.0
+                UI Version : 1.0.1
                 </li>
               </ul>
 

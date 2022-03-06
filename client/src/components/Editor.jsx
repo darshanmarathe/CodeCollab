@@ -27,7 +27,7 @@ export default class EditorWrapper extends Component {
     //this.handleEditorDidMount.bind(this);
   }
 
-  SetTooEarly = (time = 2000) => {
+  SetTooEarly = (time = 1000) => {
     setTimeout(() => {
       this.isTooEarly = !this.isTooEarly;
     }, time);
