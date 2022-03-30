@@ -103,10 +103,9 @@ function App() {
                     </ul>
                   </div>
                 </li>
-                  {/* <li>
-                    Backend
+                  <li>
                     {REACT_APP_BACKEND}
-                  </li> */}
+                  </li>
                 <li className="nav-item">
                   <a target="_blank" href="https://github.com/darshanmarathe" className="nav-link">
                     <span data-feather="shopping-cart"></span>
