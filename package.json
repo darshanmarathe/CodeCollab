@@ -2,5 +2,8 @@
   "name": "javascript-km1ni3",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "start": "cd server && npm run start"
+  },
   "dependencies": {}
 }
