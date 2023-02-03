@@ -27,11 +27,11 @@ export default class EditorWrapper extends Component {
     //this.handleEditorDidMount.bind(this);
   }
 
-  SetTooEarly = (time = 1000) => {
-    setTimeout(() => {
+  SetTooEarly = (time = 1500) => {
+    setInterval(() => {
       this.isTooEarly = !this.isTooEarly;
     }, time);
-    this.SetTooEarly();
+    
   };
 
   handleEditorDidMount = (editor, monaco) => {
@@ -188,6 +188,7 @@ export default class EditorWrapper extends Component {
     });
     this.socket.on("channel", (channel) => {
       console.info("channel", channel);
+      
       if (channel.name === this.props.meetingCode) {
         this.props.onUserConnect(channel.LastUserJoined.name);
         this.setState({
@@ -198,6 +199,7 @@ export default class EditorWrapper extends Component {
         if (this.props.language !== channel.language) {
           this.props.onLanguageChanged(channel.language);
         }
+        this.SetTooEarly();
       }
       this.props.onUsersChanged(channel.users);
     });
@@ -246,11 +248,12 @@ export default class EditorWrapper extends Component {
   }
 
   showValue = (value, event) => {
-    const text = value;
-    this.setState({ code: text });
-    
-    if (!this.isTooEarly) {
-        const message = {
+
+    console.warn(this.isTooEarly)
+    if (this.isTooEarly !== false) {
+      const text = value;
+      this.setState({ code: text });
+      const message = {
           meetingCode: this.props.meetingCode,
           text,
           language: this.state.language,

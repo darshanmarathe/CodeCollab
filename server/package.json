@@ -10,11 +10,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.2",
-    "socket.io": "^4.4.1",
-    "tinycolor2": "^1.4.2"
+    "express": "^4.18.2",
+    "socket.io": "^4.5.4",
+    "tinycolor2": "^1.5.2"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "nodemon": "^2.0.20"
   }
 }
