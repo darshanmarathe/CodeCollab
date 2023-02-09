@@ -12,7 +12,7 @@ export default class EditorWrapper extends Component {
   _editor = undefined;
   contentWidgets = {};
   isTooEarly = false;
-
+  lastcall = null;
   constructor(props) {
     super(props);
     this.state = {
@@ -27,9 +27,10 @@ export default class EditorWrapper extends Component {
     //this.handleEditorDidMount.bind(this);
   }
 
-  SetTooEarly = (time = 1500) => {
+  SetTooEarly = (time = 300) => {
     setInterval(() => {
       this.isTooEarly = !this.isTooEarly;
+      if(this.lastcall !=null) this.lastcall();
     }, time);
     
   };
@@ -38,11 +39,13 @@ export default class EditorWrapper extends Component {
     this._editor = editor;
 
     editor.onDidChangeCursorSelection((e) => {
-      this.socket.emit("selection", {
-        event: e,
-        meetingCode: this.props.meetingCode,
-        userId: this.state.clientId,
-      });
+      if(this.isTooEarly !== false){
+        this.socket.emit("selection", {
+          event: e,
+          meetingCode: this.props.meetingCode,
+          userId: this.state.clientId,
+        });
+      }
     });
   };
 
@@ -158,7 +161,6 @@ export default class EditorWrapper extends Component {
           },
         });
     }
-    console.table(this.decorations, data.userId);
     this.decorations[data.userId] = this._editor.deltaDecorations(
       this.decorations[data.userId],
       selectionArray
@@ -166,6 +168,7 @@ export default class EditorWrapper extends Component {
   }
 
   changeWidgetPosition(data) {
+  if(this.isTooEarly !== false){
     const e = data.event;
     this.contentWidgets[data.userId].position.lineNumber =
       e.selection.endLineNumber;
@@ -173,6 +176,7 @@ export default class EditorWrapper extends Component {
 
     this._editor.removeContentWidget(this.contentWidgets[data.userId]);
     this._editor.addContentWidget(this.contentWidgets[data.userId]);
+  }
   }
 
   componentDidMount() {
@@ -214,7 +218,7 @@ export default class EditorWrapper extends Component {
           meetingCode: message.meetingCode,
         });
 
-        this._editor.getModel().applyEdits(message.event.changes);
+        //this._editor.getModel().applyEdits(message.event.changes);
         if (this.props.language !== message.language) {
           this.props.onLanguageChanged(message.language);
         }
@@ -235,7 +239,6 @@ export default class EditorWrapper extends Component {
     });
     this.socket.on("selection", (message) => {
       //change Selection Event
-      console.info("selection", message);
       if (
         message.meetingCode === this.props.meetingCode &&
         message.userId !== this.state.clientId
@@ -248,12 +251,11 @@ export default class EditorWrapper extends Component {
   }
 
   showValue = (value, event) => {
-
-    console.warn(this.isTooEarly)
-    if (this.isTooEarly !== false) {
+     if (this.isTooEarly !== false) {
+      this.lastcall = null;
       const text = value;
-      this.setState({ code: text });
-      const message = {
+      this.setState({ code: text }, () => {
+        const message = {
           meetingCode: this.props.meetingCode,
           text,
           language: this.state.language,
@@ -261,6 +263,24 @@ export default class EditorWrapper extends Component {
           event,
         };
         this.socket.emit("coded", message);
+      });
+    
+    }else{
+      this.lastcall = () =>{
+        const text = value;
+        this.setState({ code: text }, () => {
+          const message = {
+            meetingCode: this.props.meetingCode,
+            text,
+            language: this.state.language,
+            clientId: this.state.clientId,
+            event,
+          };
+          this.socket.emit("coded", message);
+        });
+        
+        this.lastcall = null;
+      }     
     }
 
   };
