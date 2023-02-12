@@ -11,8 +11,7 @@ export default class EditorWrapper extends Component {
   editorRef = null;
   _editor = undefined;
   contentWidgets = {};
-  isTooEarly = false;
-  lastcall = null;
+  handleStuff = true;
   constructor(props) {
     super(props);
     this.state = {
@@ -30,22 +29,26 @@ export default class EditorWrapper extends Component {
   SetTooEarly = (time = 300) => {
     setInterval(() => {
       this.isTooEarly = !this.isTooEarly;
-      if(this.lastcall !=null) this.lastcall();
+      if (this.lastcall != null) this.lastcall();
     }, time);
-    
+
   };
 
   handleEditorDidMount = (editor, monaco) => {
     this._editor = editor;
 
     editor.onDidChangeCursorSelection((e) => {
-      if(this.isTooEarly !== false){
         this.socket.emit("selection", {
           event: e,
           meetingCode: this.props.meetingCode,
           userId: this.state.clientId,
         });
-      }
+      });
+  
+    editor.onDidChangeModelContent(e => {
+      debugger;
+      const val = editor.getValue();
+      this.showValue(val , e)
     });
   };
 
@@ -168,7 +171,6 @@ export default class EditorWrapper extends Component {
   }
 
   changeWidgetPosition(data) {
-  if(this.isTooEarly !== false){
     const e = data.event;
     this.contentWidgets[data.userId].position.lineNumber =
       e.selection.endLineNumber;
@@ -176,7 +178,6 @@ export default class EditorWrapper extends Component {
 
     this._editor.removeContentWidget(this.contentWidgets[data.userId]);
     this._editor.addContentWidget(this.contentWidgets[data.userId]);
-  }
   }
 
   componentDidMount() {
@@ -192,7 +193,7 @@ export default class EditorWrapper extends Component {
     });
     this.socket.on("channel", (channel) => {
       console.info("channel", channel);
-      
+
       if (channel.name === this.props.meetingCode) {
         this.props.onUserConnect(channel.LastUserJoined.name);
         this.setState({
@@ -217,7 +218,7 @@ export default class EditorWrapper extends Component {
           language: message.language,
           meetingCode: message.meetingCode,
         });
-
+        this.handleStuff = message.handleStuff
         //this._editor.getModel().applyEdits(message.event.changes);
         if (this.props.language !== message.language) {
           this.props.onLanguageChanged(message.language);
@@ -251,8 +252,12 @@ export default class EditorWrapper extends Component {
   }
 
   showValue = (value, event) => {
-     if (this.isTooEarly !== false) {
-      this.lastcall = null;
+    debugger;
+    if (this.handleStuff === false) {
+      this.handleStuff = true;
+      return;
+    } else {
+      // false if user input
       const text = value;
       this.setState({ code: text }, () => {
         const message = {
@@ -261,27 +266,13 @@ export default class EditorWrapper extends Component {
           language: this.state.language,
           clientId: this.state.clientId,
           event,
+          handleStuff : false
         };
         this.socket.emit("coded", message);
       });
-    
-    }else{
-      this.lastcall = () =>{
-        const text = value;
-        this.setState({ code: text }, () => {
-          const message = {
-            meetingCode: this.props.meetingCode,
-            text,
-            language: this.state.language,
-            clientId: this.state.clientId,
-            event,
-          };
-          this.socket.emit("coded", message);
-        });
-        
-        this.lastcall = null;
-      }     
+
     }
+
 
   };
 
@@ -293,8 +284,7 @@ export default class EditorWrapper extends Component {
           width="90vw"
           theme="vs-light"
           style={{ float: "left" }}
-          onChange={this.showValue}
-          path={this.state.language}
+           path={this.state.language}
           defaultLanguage={this.state.language}
           value={this.state.code}
           //defaultValue={code}
