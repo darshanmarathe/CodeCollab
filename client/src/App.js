@@ -117,7 +117,7 @@ function App() {
                   </a>
                 </li>
                 <li>
-                UI Version : 1.0.2
+                UI Version : 1.0.3
                 </li>
               </ul>
 
