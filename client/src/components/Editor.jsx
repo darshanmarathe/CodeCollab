@@ -282,7 +282,7 @@ export default class EditorWrapper extends Component {
         <Editor
           height="100vh"
           width="90vw"
-          theme="vs-light"
+          theme={"vs-" + this.props.theme}
           style={{ float: "left" }}
            path={this.state.language}
           defaultLanguage={this.state.language}

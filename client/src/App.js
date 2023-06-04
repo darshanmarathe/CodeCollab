@@ -26,6 +26,7 @@ function App() {
   const [language, setLanguage] = useState('javascript')
   const [CurrentUser , setCurrentUser] = useState('NA');
   const [copied, setCopy] = useState("bi-clipboard")
+  const [theme, setTheme] = useState("light")
   
   const meetingCode = window.location.pathname === "/" ? makeId(8) : window.location.pathname.replace("/", "");
   if (window.location.pathname === "/") {
@@ -91,6 +92,16 @@ function App() {
                   </div>
                 </li>
                 <li className="nav-item">
+                  <span> Theme</span>
+                    <select className="form-select" value={theme} onChange={(e) => {
+                      setTheme(e.target.value);
+                    }}>
+                    <option value="light">Light</option>
+                      <option value="dark">Dark</option>
+                      
+                      </select>                 
+                </li>
+                <li className="nav-item">
                   <div className="nav-link" href="#">
                     <span data-feather="shopping-cart"></span>
                     Users : <b> {loggedinUsers.length} </b>
@@ -132,6 +143,7 @@ function App() {
                 language={language}
                 meetingCode={meetingCode}
                 code={code}
+                theme={theme}
                 onUserConnect={(name) => {
                   if(CurrentUser === 'NA' ){
                     setCurrentUser(name)
