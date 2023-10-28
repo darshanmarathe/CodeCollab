@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { Widget, addResponseMessage } from "react-chat-widget";
+import "react-chat-widget/lib/styles.css";
 import Editor from "@monaco-editor/react";
 import socketClient from "socket.io-client";
 const { REACT_APP_BACKEND } = process.env;
@@ -23,6 +25,7 @@ export default class EditorWrapper extends Component {
       clientId: null,
     };
     this.showValue.bind(this);
+    this.handleNewUserMessage.bind(this);
     //this.handleEditorDidMount.bind(this);
   }
 
@@ -31,24 +34,23 @@ export default class EditorWrapper extends Component {
       this.isTooEarly = !this.isTooEarly;
       if (this.lastcall != null) this.lastcall();
     }, time);
-
   };
 
   handleEditorDidMount = (editor, monaco) => {
     this._editor = editor;
 
     editor.onDidChangeCursorSelection((e) => {
-        this.socket.emit("selection", {
-          event: e,
-          meetingCode: this.props.meetingCode,
-          userId: this.state.clientId,
-        });
+      this.socket.emit("selection", {
+        event: e,
+        meetingCode: this.props.meetingCode,
+        userId: this.state.clientId,
       });
-  
-    editor.onDidChangeModelContent(e => {
+    });
+
+    editor.onDidChangeModelContent((e) => {
       debugger;
       const val = editor.getValue();
-      this.showValue(val , e)
+      this.showValue(val, e);
     });
   };
 
@@ -59,6 +61,18 @@ export default class EditorWrapper extends Component {
       this.setState({ language: this.props.language });
     }
   }
+
+  handleNewUserMessage = (newMessage) => {
+    debugger;
+    console.log(`New message incoming! ${newMessage}`);
+    // Now send the message throught the backend API
+    const message = {
+      meetingCode: this.props.meetingCode,
+      message: `${this.props.user}: ${newMessage}`,
+      userId: this.props.user,
+    };
+    this.socket.emit("message", message);
+  };
 
   insertCSS(id, color) {
     var style = document.createElement("style");
@@ -208,6 +222,15 @@ export default class EditorWrapper extends Component {
       }
       this.props.onUsersChanged(channel.users);
     });
+
+    this.socket.on("message", (message) => {
+      if (
+        message.meetingCode === this.props.meetingCode &&
+        message.userId !== this.props.user
+      ){
+        addResponseMessage(message.message);
+      }
+    });
     this.socket.on("coded", (message) => {
       if (
         message.meetingCode === this.props.meetingCode &&
@@ -218,7 +241,7 @@ export default class EditorWrapper extends Component {
           language: message.language,
           meetingCode: message.meetingCode,
         });
-        this.handleStuff = message.handleStuff
+        this.handleStuff = message.handleStuff;
         //this._editor.getModel().applyEdits(message.event.changes);
         if (this.props.language !== message.language) {
           this.props.onLanguageChanged(message.language);
@@ -266,25 +289,28 @@ export default class EditorWrapper extends Component {
           language: this.state.language,
           clientId: this.state.clientId,
           event,
-          handleStuff : false
+          handleStuff: false,
         };
         this.socket.emit("coded", message);
       });
-
     }
-
-
   };
 
   render() {
     return (
       <div>
+        <Widget
+          handleNewUserMessage={this.handleNewUserMessage}
+          title="Interview Pad"
+          subtitle="Developed by Darshan Marathe"
+        />
+
         <Editor
           height="100vh"
           width="90vw"
           theme={"vs-" + this.props.theme}
           style={{ float: "left" }}
-           path={this.state.language}
+          path={this.state.language}
           defaultLanguage={this.state.language}
           value={this.state.code}
           //defaultValue={code}

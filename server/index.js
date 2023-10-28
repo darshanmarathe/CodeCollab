@@ -68,7 +68,6 @@ http.listen(PORT, () => {
 });
 
 io.on('connection', (socket) => { // socket object may be used to send specific messages to the new connected client
-  console.log('connection made')
   socket.on('channel-join', id => {
     //if (STATIC_CHANNELS.length ===0)  StartTrack();
     let chan = STATIC_CHANNELS.find((x) => x.id === id)
@@ -130,12 +129,17 @@ io.on('connection', (socket) => { // socket object may be used to send specific 
     
   });
 
+  socket.on('message', message => {
+    console.log("message received" , message);
+   // AddToChannel(message);
+    io.emit('message', message);
+    
+  });
+
   function AddToChannel(coded){
-    console.log(coded , "coded");
-    let chan = STATIC_CHANNELS.find((x) => x.id === coded.meetingCode)
+     let chan = STATIC_CHANNELS.find((x) => x.id === coded.meetingCode)
     if(chan)  {
         chan.text = coded.text;
-        console.log(chan.id , chan.text)
       }
      }
 
@@ -149,7 +153,6 @@ let chan_to_be_removed = null
         c.users = c.users.filter(x => x.userId != socket.id)
         io.emit('channel', c);
       }
-      console.log(c.participants,"c.participants")
       if(c.participants === 0){
         chan_to_be_removed = c;
       }
@@ -176,7 +179,6 @@ app.get('/getChannels', (req, res) => {
 function StartTrack()
 {
   interval = setInterval(() => {
-    console.log(STATIC_CHANNELS.length , "STATIC_CHANNELS")
   }, 60 * 1000)
 }
 
