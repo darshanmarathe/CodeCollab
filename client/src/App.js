@@ -5,8 +5,10 @@ import LanguagePicker from "./components/LanguagePicker";
 import EditorWrapper from "./components/Editor";
 import supportedLanguages from "./components/common";
 import HeaderComponent from "./components/Header";
+import { Peer } from 'peerjs'
 const { REACT_APP_BACKEND } = process.env;
 
+let peer;
 function App() {
   function makeId(length) {
     var result = "";
@@ -60,6 +62,51 @@ function App() {
     document.execCommand("copy");
     // Remove temporary element
     document.body.removeChild(el);
+  }
+
+  async function Share() {
+if(peer == undefined)
+    peer = new Peer(meetingCode);
+    peer.on("open", (id) => {
+      console.log("My peer ID is: " + id);
+    });
+    const localStream = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+    });
+
+    debugger;
+    const calls = [];
+    loggedinUsers.forEach((u) => {
+      if(u.name !== CurrentUser)
+        calls.push(peer.call(u.name, localStream));
+    })
+
+
+  }
+
+
+  function Watch() {
+    debugger;
+    if(peer == undefined)
+      peer = new Peer(CurrentUser);
+    peer.on("open", (id) => {
+      console.log("My peer ID is: " + id);
+    });
+    peer.connect(meetingCode);
+    const remoteVideo = document.getElementById('watch')
+    const codeCont = document.getElementById('codeCont')
+  
+    remoteVideo.style.display = 'block';
+    remoteVideo.style.width = '100%';
+    remoteVideo.style.height = '100%';
+    peer.on("call", (call) => {
+      call.answer();
+
+      call.on("stream", (remoteStream) => {
+        remoteVideo.srcObject = remoteStream;
+        remoteVideo.play();
+      });
+    });
   }
 
   return (
@@ -156,6 +203,11 @@ function App() {
                     </b>
                   </a>
                 </li>
+                <li>
+                  <button onClick={Share}>Share</button>
+                  <button onClick={Watch}>Watch</button>
+                 
+                </li>
                 <li>UI Version : 1.0.2</li>
                 {/* <li>
                   Show chat
@@ -170,23 +222,24 @@ function App() {
           </nav>
 
           <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <video id="watch" controls style={{display: 'none'}}></video>
+            <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" id="codeCont">
 
-                <EditorWrapper
-                  language={language}
-                  meetingCode={meetingCode}
-                  code={code}
-                  theme={theme}
-                  user={CurrentUser}
-                  onUserConnect={(name) => {
-                    if (CurrentUser === "NA") {
-                      setCurrentUser(name);
-                    }
-                  }}
-                  onUsersChanged={setUsersChange}
-                  onLanguageChanged={setLanguage}
-                />
-            
+              <EditorWrapper
+                language={language}
+                meetingCode={meetingCode}
+                code={code}
+                theme={theme}
+                user={CurrentUser}
+                onUserConnect={(name) => {
+                  if (CurrentUser === "NA") {
+                    setCurrentUser(name);
+                  }
+                }}
+                onUsersChanged={setUsersChange}
+                onLanguageChanged={setLanguage}
+              />
+
             </div>
           </main>
         </div>

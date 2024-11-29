@@ -1,14 +1,8 @@
 cd server 
-cd public 
-cd static 
-cd css 
-del *.*
-cd ..
-cd js 
-cd *.*
-call pwd
+call rimraf public 
+call md public
 pause
-call up 2
+call up
 cd client 
 call npx browserslist@latest --update-db
 call npm run build 
