@@ -3,6 +3,8 @@ var app = express();
 var http = require('http').createServer(app);
 var cors = require('cors')
 var path  = require("path")  ;
+const { ExpressPeerServer } = require('peer');
+
 const PORT = process.env.PORT || 3000;
 
 const common  = require('./common/randomColor')
@@ -66,6 +68,14 @@ app.get('/:id', ServeFile);
 http.listen(PORT, () => {
   console.log(`listening on *:${PORT}`);
 });
+
+
+const peerServer = ExpressPeerServer(http, {
+  debug: true
+});
+
+app.use('/peerjs', peerServer);
+
 
 io.on('connection', (socket) => { // socket object may be used to send specific messages to the new connected client
   socket.on('channel-join', id => {

@@ -6,7 +6,9 @@ del *.*
 cd ..
 cd js 
 cd *.*
-call up 4
+call pwd
+pause
+call up 2
 cd client 
 call npx browserslist@latest --update-db
 call npm run build 
