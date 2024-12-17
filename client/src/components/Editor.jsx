@@ -204,6 +204,7 @@ export default class EditorWrapper extends Component {
     this.socket.on("connection", () => {
       console.info("connection");
       this.setState({ clientId: this.socket.id });
+      this.props.onSetSocket(this.socket);
     });
     this.socket.on("channel", (channel) => {
       console.info("channel", channel);

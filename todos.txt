@@ -2,3 +2,10 @@ Client
     Load the code from server when loaded from server.
 Server 
     Add text to the room 
+
+
+
+1. Do The Sketch sync 
+2. Make sure rooms are conncted like room_user peer js 
+3. On Joined Screen share logic .
+4. check the digraming tool 

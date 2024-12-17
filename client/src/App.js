@@ -3,9 +3,10 @@ import React, { useState } from "react";
 
 import LanguagePicker from "./components/LanguagePicker";
 import EditorWrapper from "./components/Editor";
+import Sketch from "./components/Sketch";
 import supportedLanguages from "./components/common";
 import HeaderComponent from "./components/Header";
-import { Peer } from 'peerjs'
+import { Peer } from "peerjs";
 const { REACT_APP_BACKEND } = process.env;
 
 let peer;
@@ -28,6 +29,8 @@ function App() {
   const [CurrentUser, setCurrentUser] = useState("NA");
   const [copied, setCopy] = useState("bi-clipboard");
   const [theme, setTheme] = useState("light");
+  const [tab, setTab] = useState("code");
+const [socket , setSocket ] = useState(null);
 
   const meetingCode =
     window.location.pathname === "/"
@@ -45,7 +48,6 @@ function App() {
     const langua = supportedLanguages.find((x) => x.id === parseInt(lang));
     setLanguage(langua.name);
   }
-
 
   function copyStringToClipboard(str) {
     // Create new element
@@ -65,8 +67,7 @@ function App() {
   }
 
   async function Share() {
-if(peer == undefined)
-    peer = new Peer(meetingCode);
+    if (peer == undefined) peer = new Peer(meetingCode);
     peer.on("open", (id) => {
       console.log("My peer ID is: " + id);
     });
@@ -74,31 +75,20 @@ if(peer == undefined)
       video: true,
     });
 
-    debugger;
     const calls = [];
     loggedinUsers.forEach((u) => {
-      if(u.name !== CurrentUser)
-        calls.push(peer.call(u.name, localStream));
-    })
-
-
+      if (u.name !== CurrentUser) calls.push(peer.call(u.name, localStream));
+    });
   }
 
-
   function Watch() {
-    debugger;
-    if(peer == undefined)
-      peer = new Peer(CurrentUser);
+    if (peer == undefined) peer = new Peer(CurrentUser);
     peer.on("open", (id) => {
       console.log("My peer ID is: " + id);
     });
     peer.connect(meetingCode);
-    const remoteVideo = document.getElementById('watch')
-    const codeCont = document.getElementById('codeCont')
-  
-    remoteVideo.style.display = 'block';
-    remoteVideo.style.width = '100%';
-    remoteVideo.style.height = '100%';
+    const remoteVideo = document.getElementById("watch");
+
     peer.on("call", (call) => {
       call.answer();
 
@@ -107,6 +97,13 @@ if(peer == undefined)
         remoteVideo.play();
       });
     });
+  }
+
+
+  function onSetSocket(socket){
+    if(socket){
+      setSocket(socket);
+    }
   }
 
   return (
@@ -203,11 +200,7 @@ if(peer == undefined)
                     </b>
                   </a>
                 </li>
-                <li>
-                  <button onClick={Share}>Share</button>
-                  <button onClick={Watch}>Watch</button>
-                 
-                </li>
+
                 <li>UI Version : 1.0.2</li>
                 {/* <li>
                   Show chat
@@ -222,24 +215,117 @@ if(peer == undefined)
           </nav>
 
           <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-          <video id="watch" controls style={{display: 'none'}}></video>
-            <div className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom" id="codeCont">
+            <ul className="nav nav-pills mb-3" id="pills-tab" role="tablist">
+              <li className="nav-item" role="presentation">
+                <button
+                  className="nav-link active"
+                  id="pills-home-tab"
+                  data-bs-toggle="pill"
+                  data-bs-target="#pills-home"
+                  type="button"
+                  role="tab"
+                  aria-controls="pills-home"
+                  aria-selected="true"
+                  onClick={() => setTab('code')}
+                >
+                  Code
+                </button>
+              </li>
+              <li className="nav-item" role="presentation">
+                <button
+                  className="nav-link"
+                  id="pills-profile-tab"
+                  data-bs-toggle="pill"
+                  data-bs-target="#pills-profile"
+                  type="button"
+                  role="tab"
+                  aria-controls="pills-profile"
+                  aria-selected="false"
+                  onClick={() => setTab('screen')}
+                >
+                  Screen
+                </button>
+              </li>
+              <li className="nav-item" role="presentation">
+                <button
+                  className="nav-link"
+                  id="pills-contact-tab"
+                  data-bs-toggle="pill"
+                  data-bs-target="#pills-contact"
+                  type="button"
+                  role="tab"
+                  aria-controls="pills-contact"
+                  aria-selected="false"
+                  onClick={() => setTab('sketch')}
+                >
+                  Sketch
+                </button>
+              </li>
+            </ul>
 
-              <EditorWrapper
-                language={language}
-                meetingCode={meetingCode}
-                code={code}
-                theme={theme}
-                user={CurrentUser}
-                onUserConnect={(name) => {
-                  if (CurrentUser === "NA") {
-                    setCurrentUser(name);
-                  }
-                }}
-                onUsersChanged={setUsersChange}
-                onLanguageChanged={setLanguage}
-              />
+            <div
+              className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+              id="codeCont"
+            >
+              <div className="tab-content" id="pills-tabContent">
+                <div
+                  className="tab-pane fade show active"
+                  id="pills-home"
+                  role="tabpanel"
+                  aria-labelledby="pills-home-tab"
+                >
+                  {tab === "code" && (
+                    <EditorWrapper
+                      language={language}
+                      meetingCode={meetingCode}
+                      code={code}
+                      theme={theme}
+                      user={CurrentUser}
+                      onUserConnect={(name) => {
+                        if (CurrentUser === "NA") {
+                          setCurrentUser(name);
+                        }
+                      }}
+                      onSetSocket={onSetSocket}
+                      onUsersChanged={setUsersChange}
+                      onLanguageChanged={setLanguage}
+                    />
+                  )}
+                </div>
+                <div
+                  className="tab-pane fade"
+                  id="pills-profile"
+                  role="tabpanel"
+                  aria-labelledby="pills-profile-tab"
+                >
+                  {tab === "screen" && (
+                    <div>
+                      <button className="btn btn-success" onClick={Share}>
+                        Share
+                      </button>
+                      <button className="btn btn-primary" onClick={Watch}>
+                        Watch
+                      </button>
 
+                      <video
+                        id="watch"
+                        width="1000"
+                        style={{ objectFit: "cover" }}
+                        height="500"
+                        controls
+                      ></video>
+                    </div>
+                  )}
+                </div>
+                <div
+                  className="tab-pane fade"
+                  id="pills-contact"
+                  role="tabpanel"
+                  aria-labelledby="pills-contact-tab"
+                >
+                  {tab === 'sketch' && <Sketch socket={socket} />}
+                </div>
+              </div>
             </div>
           </main>
         </div>
