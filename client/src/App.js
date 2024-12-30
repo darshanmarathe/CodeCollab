@@ -30,7 +30,7 @@ function App() {
   const [copied, setCopy] = useState("bi-clipboard");
   const [theme, setTheme] = useState("light");
   const [tab, setTab] = useState("code");
-const [socket , setSocket ] = useState(null);
+  const [socket, setSocket] = useState(null);
 
   const meetingCode =
     window.location.pathname === "/"
@@ -67,7 +67,7 @@ const [socket , setSocket ] = useState(null);
   }
 
   async function Share() {
-    if (peer == undefined) peer = new Peer(meetingCode);
+    if (peer === undefined) peer = new Peer(meetingCode);
     peer.on("open", (id) => {
       console.log("My peer ID is: " + id);
     });
@@ -99,9 +99,8 @@ const [socket , setSocket ] = useState(null);
     });
   }
 
-
-  function onSetSocket(socket){
-    if(socket){
+  function onSetSocket(socket) {
+    if (socket) {
       setSocket(socket);
     }
   }
@@ -226,7 +225,7 @@ const [socket , setSocket ] = useState(null);
                   role="tab"
                   aria-controls="pills-home"
                   aria-selected="true"
-                  onClick={() => setTab('code')}
+                  onClick={() => setTab("code")}
                 >
                   Code
                 </button>
@@ -241,7 +240,7 @@ const [socket , setSocket ] = useState(null);
                   role="tab"
                   aria-controls="pills-profile"
                   aria-selected="false"
-                  onClick={() => setTab('screen')}
+                  onClick={() => setTab("screen")}
                 >
                   Screen
                 </button>
@@ -256,7 +255,7 @@ const [socket , setSocket ] = useState(null);
                   role="tab"
                   aria-controls="pills-contact"
                   aria-selected="false"
-                  onClick={() => setTab('sketch')}
+                  onClick={() => setTab("sketch")}
                 >
                   Sketch
                 </button>
@@ -323,7 +322,7 @@ const [socket , setSocket ] = useState(null);
                   role="tabpanel"
                   aria-labelledby="pills-contact-tab"
                 >
-                  {tab === 'sketch' && <Sketch socket={socket} />}
+                  {tab === "sketch" && <Sketch socket={socket} />}
                 </div>
               </div>
             </div>

@@ -51,6 +51,14 @@ var ServeFile = function (req, res) {
 };
 app.use(express.static(path.join(__dirname, "public")));
 app.get("/", ServeFile);
+/**
+ * @description This methos retirves the static channels
+ */
+app.get("/getChannels", (req, res) => {
+  res.json({
+    channels: STATIC_CHANNELS,
+  });
+});
 app.get("/:id", ServeFile);
 
 http.listen(PORT, () => {
@@ -162,23 +170,7 @@ io.on("connection", (socket) => {
         (chan) => chan.name !== chan_to_be_removed.name
       );
     }
-    if (STATIC_CHANNELS.length === 0) StopTrack();
+  
   });
 });
 
-/**
- * @description This methos retirves the static channels
- */
-app.get("/getChannels", (req, res) => {
-  res.json({
-    channels: STATIC_CHANNELS,
-  });
-});
-
-function StartTrack() {
-  interval = setInterval(() => {}, 60 * 1000);
-}
-
-function StopTrack() {
-  clearInterval(interval);
-}

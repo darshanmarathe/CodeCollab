@@ -2,10 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
 import { IconEraser, IconPencil, IconRestore } from "@tabler/icons-react";
 
-import paths from "../sketch.json";
-import socketClient from "socket.io-client";
-const { REACT_APP_BACKEND } = process.env;
-const SERVER = REACT_APP_BACKEND;
+
 
 const iconButton =
   "p-2 rounded-xl border cursor-pointer dark:border-accent-900 dark:text-accent-200";
@@ -77,13 +74,17 @@ function Sketch({socket}) {
         ref={ref}
         canvasColor="transparent"    
         height="400px"
+        width="1000px"
         strokeWidth={4}
         strokeColor={strokeColor}
-        onChange={(e) => {
+        onStroke={(e) => {
           console.log(e);
           if (socket && e != null && e.length > 0) {
             socket.emit("drawn", e);
           }
+        }}
+        onChange={(e) => {
+        
         }}
       />
       <div className="flex flex-col w-10">

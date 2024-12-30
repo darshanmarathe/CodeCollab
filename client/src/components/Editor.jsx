@@ -26,15 +26,7 @@ export default class EditorWrapper extends Component {
     };
     this.showValue.bind(this);
     this.handleNewUserMessage.bind(this);
-    //this.handleEditorDidMount.bind(this);
   }
-
-  SetTooEarly = (time = 300) => {
-    setInterval(() => {
-      this.isTooEarly = !this.isTooEarly;
-      if (this.lastcall != null) this.lastcall();
-    }, time);
-  };
 
   handleEditorDidMount = (editor, monaco) => {
     this._editor = editor;
@@ -48,7 +40,6 @@ export default class EditorWrapper extends Component {
     });
 
     editor.onDidChangeModelContent((e) => {
-      debugger;
       const val = editor.getValue();
       this.showValue(val, e);
     });
@@ -219,7 +210,7 @@ export default class EditorWrapper extends Component {
         if (this.props.language !== channel.language) {
           this.props.onLanguageChanged(channel.language);
         }
-        this.SetTooEarly();
+            
       }
       this.props.onUsersChanged(channel.users);
     });
