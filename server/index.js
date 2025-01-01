@@ -11,6 +11,7 @@ const nameGen = require("./common/namesgenerator");
 
 console.clear();
 
+
 var io = require("socket.io")(http, {
   cors: {
     origin: "*",

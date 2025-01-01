@@ -28,8 +28,12 @@ export default class EditorWrapper extends Component {
     if(this.props.socket){
       this.socket = this.props.socket;
     }
+    this.decorations = this.props.decorations;
+    this.contentWidgets = this.props.widgets;
     this.showValue.bind(this);
     this.handleNewUserMessage.bind(this);
+
+    console.log("constructor", this.props.decorations)
   }
 
   handleEditorDidMount = (editor, monaco) => {
@@ -243,7 +247,7 @@ export default class EditorWrapper extends Component {
             language: message.language,
             meetingCode: message.meetingCode,
           });
-          this.props.setCode(message.text);
+          this.props.setCode({text : message.text , decorations: this.decorations});
           this.handleStuff = message.handleStuff;
           //this._editor.getModel().applyEdits(message.event.changes);
           if (this.props.language !== message.language) {
@@ -289,7 +293,7 @@ export default class EditorWrapper extends Component {
     } else {
       // false if user input
       const text = value;
-      this.props.setCode(text);
+      this.props.setCode({text , decorations:  this.decorations});
       this.setState({ code: text }, () => {
         const message = {
           meetingCode: this.props.meetingCode,

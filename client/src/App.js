@@ -24,8 +24,8 @@ function App() {
   const [code , setCode] = useState(
     "// write code here..."
   );
-
-
+  const [decorations , setDecoration] = useState({});
+  const [widgets , setWidgets] = useState({});
 
   const [loggedinUsers, setLoggedinUser] = useState([]);
   const [language, setLanguage] = useState("javascript");
@@ -203,7 +203,7 @@ function App() {
                   </a>
                 </li>
 
-                <li>UI Version : 1.0.2</li>
+                <li>UI Version : 1.1.0</li>
                 {/* <li>
                   Show chat
                   <input
@@ -287,8 +287,11 @@ function App() {
                       code={code}
                       theme={theme}
                       user={CurrentUser}
+                      decorations={decorations}
+                      widgets={widgets}
                       setCode={(t) => {
-                        setCode(t)
+                        setCode(t.text)
+                        setDecoration(t.decorations)
                         console.log(code)
               
                       }}
