@@ -199,7 +199,7 @@ export default class EditorWrapper extends Component {
         reconnectionDelay: 500, // Number of reconnection attempts before giving (default: Infinity)
         reconnectionAttempts: 10, // How long to initially wait before attempting a new reconnection (default: 1000)
       });
-  
+    }
       this.socket.on("connection", () => {
         console.info("connection");
         this.setState({ clientId: this.socket.id });
@@ -278,7 +278,7 @@ export default class EditorWrapper extends Component {
         }
       });
       
-    }
+
 
   }
 

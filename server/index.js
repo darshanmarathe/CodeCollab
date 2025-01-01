@@ -7,7 +7,6 @@ const { ExpressPeerServer } = require("peer");
 
 const PORT = process.env.PORT || 3000;
 
-const common = require("./common/randomColor");
 const nameGen = require("./common/namesgenerator");
 
 console.clear();
