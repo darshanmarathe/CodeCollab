@@ -7,7 +7,6 @@ import Sketch from "./components/Sketch";
 import supportedLanguages from "./components/common";
 import HeaderComponent from "./components/Header";
 import { Peer } from "peerjs";
-const { REACT_APP_BACKEND } = process.env;
 
 let peer;
 function App() {
@@ -22,7 +21,11 @@ function App() {
     return result;
   }
 
-  const code = "// write code here...";
+  const [code , setCode] = useState(
+    "// write code here..."
+  );
+
+
 
   const [loggedinUsers, setLoggedinUser] = useState([]);
   const [language, setLanguage] = useState("javascript");
@@ -225,7 +228,11 @@ function App() {
                   role="tab"
                   aria-controls="pills-home"
                   aria-selected="true"
-                  onClick={() => setTab("code")}
+                  onClick={() => {
+                    console.log(code)
+                    setTab("code")
+                    
+                  }}
                 >
                   Code
                 </button>
@@ -280,11 +287,17 @@ function App() {
                       code={code}
                       theme={theme}
                       user={CurrentUser}
+                      setCode={(t) => {
+                        setCode(t)
+                        console.log(code)
+              
+                      }}
                       onUserConnect={(name) => {
                         if (CurrentUser === "NA") {
                           setCurrentUser(name);
                         }
                       }}
+                      socket={socket}
                       onSetSocket={onSetSocket}
                       onUsersChanged={setUsersChange}
                       onLanguageChanged={setLanguage}

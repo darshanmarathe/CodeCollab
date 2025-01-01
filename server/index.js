@@ -10,6 +10,8 @@ const PORT = process.env.PORT || 3000;
 const common = require("./common/randomColor");
 const nameGen = require("./common/namesgenerator");
 
+console.clear();
+
 var io = require("socket.io")(http, {
   cors: {
     origin: "*",
@@ -128,7 +130,7 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("selection", data);
   });
   socket.on("coded", (coded) => {
-    console.log("coded received");
+    console.log("coded received", coded);
     AddToChannel(coded);
     io.emit("coded", coded);
   });

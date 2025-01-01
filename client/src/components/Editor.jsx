@@ -13,6 +13,7 @@ export default class EditorWrapper extends Component {
   editorRef = null;
   _editor = undefined;
   contentWidgets = {};
+  collabrators = [];
   handleStuff = true;
   constructor(props) {
     super(props);
@@ -24,6 +25,9 @@ export default class EditorWrapper extends Component {
       isFirstTime: true,
       clientId: null,
     };
+    if(this.props.socket){
+      this.socket = this.props.socket;
+    }
     this.showValue.bind(this);
     this.handleNewUserMessage.bind(this);
   }
@@ -54,7 +58,6 @@ export default class EditorWrapper extends Component {
   }
 
   handleNewUserMessage = (newMessage) => {
-    debugger;
     console.log(`New message incoming! ${newMessage}`);
     // Now send the message throught the backend API
     const message = {
@@ -177,103 +180,116 @@ export default class EditorWrapper extends Component {
 
   changeWidgetPosition(data) {
     const e = data.event;
-    this.contentWidgets[data.userId].position.lineNumber =
+    if (this.contentWidgets[data.userId]) {
+      
+      this.contentWidgets[data.userId].position.lineNumber =
       e.selection.endLineNumber;
-    this.contentWidgets[data.userId].position.column = e.selection.endColumn;
-
-    this._editor.removeContentWidget(this.contentWidgets[data.userId]);
+      this.contentWidgets[data.userId].position.column = e.selection.endColumn;
+      
+      this._editor.removeContentWidget(this.contentWidgets[data.userId]);
     this._editor.addContentWidget(this.contentWidgets[data.userId]);
+    }
   }
 
   componentDidMount() {
-    this.socket = socketClient(SERVER, {
-      reconnection: true, // Whether to reconnect automatically (default: true)
-      reconnectionDelay: 500, // Number of reconnection attempts before giving (default: Infinity)
-      reconnectionAttempts: 10, // How long to initially wait before attempting a new reconnection (default: 1000)
-    });
-
-    this.socket.on("connection", () => {
-      console.info("connection");
-      this.setState({ clientId: this.socket.id });
-      this.props.onSetSocket(this.socket);
-    });
-    this.socket.on("channel", (channel) => {
-      console.info("channel", channel);
-
-      if (channel.name === this.props.meetingCode) {
-        this.props.onUserConnect(channel.LastUserJoined.name);
-        this.setState({
-          code: channel.text,
-          language: channel.language,
-          meetingCode: channel.meetingCode,
-        });
-        if (this.props.language !== channel.language) {
-          this.props.onLanguageChanged(channel.language);
+  
+    if (!this.socket) {
+      this.socket = socketClient(SERVER, {
+        reconnection: true, // Whether to reconnect automatically (default: true)
+        reconnectionDelay: 500, // Number of reconnection attempts before giving (default: Infinity)
+        reconnectionAttempts: 10, // How long to initially wait before attempting a new reconnection (default: 1000)
+      });
+  
+      this.socket.on("connection", () => {
+        console.info("connection");
+        this.setState({ clientId: this.socket.id });
+        this.props.onSetSocket(this.socket);
+      });
+      this.socket.on("channel", (channel) => {
+        console.info("channel", channel);
+  
+        if (channel.name === this.props.meetingCode) {
+          this.props.onUserConnect(channel.LastUserJoined.name);
+          this.setState({
+            code: channel.text,
+            language: channel.language,
+            meetingCode: channel.meetingCode,
+          });
+          if (this.props.language !== channel.language) {
+            this.props.onLanguageChanged(channel.language);
+          }
+              
         }
-            
-      }
-      this.props.onUsersChanged(channel.users);
-    });
-
-    this.socket.on("message", (message) => {
-      if (
-        message.meetingCode === this.props.meetingCode &&
-        message.userId !== this.props.user
-      ){
-        addResponseMessage(message.message);
-      }
-    });
-    this.socket.on("coded", (message) => {
-      if (
-        message.meetingCode === this.props.meetingCode &&
-        message.clientId !== this.state.clientId
-      ) {
-        this.setState({
-          code: message.text,
-          language: message.language,
-          meetingCode: message.meetingCode,
-        });
-        this.handleStuff = message.handleStuff;
-        //this._editor.getModel().applyEdits(message.event.changes);
-        if (this.props.language !== message.language) {
-          this.props.onLanguageChanged(message.language);
+        console.info(channel.users)
+        this.props.onUsersChanged(channel.users);
+      });
+  
+      this.socket.on("message", (message) => {
+        if (
+          message.meetingCode === this.props.meetingCode &&
+          message.userId !== this.props.user
+        ){
+          addResponseMessage(message.message);
         }
-      }
-    });
-    this.socket.on("userdata", (data) => {
-      //Connected Client Status Event
+      });
+  
+      this.socket.on("coded", (message) => {
+        if (
+          message.meetingCode === this.props.meetingCode &&
+          message.clientId !== this.state.clientId
+        ) {
+          this.setState({
+            code: message.text,
+            language: message.language,
+            meetingCode: message.meetingCode,
+          });
+          this.props.setCode(message.text);
+          this.handleStuff = message.handleStuff;
+          //this._editor.getModel().applyEdits(message.event.changes);
+          if (this.props.language !== message.language) {
+            this.props.onLanguageChanged(message.language);
+          }
+        }
+      });
+  
+      this.socket.on("userdata", (data) => {
+        //Connected Client Status Event
+  
+        for (var i of data) {
+          this.users[i.userId] = i.color;
+          this.insertCSS(i.userId, i.color);
+          this.insertWidget(i);
+          this.decorations[i.userId] = [];
+        }
+      });
+  
+      this.socket.emit("channel-join", this.state.meetingCode, (ack) => {
+        console.log("channel Joined", ack);
+      });
+  
+      this.socket.on("selection", (message) => {
+        //change Selection Event
+        if (
+          message.meetingCode === this.props.meetingCode &&
+          message.userId !== this.state.clientId
+        ) {
+          this.changeSeleciton(message);
+          this.changeWidgetPosition(message);
+        }
+      });
+      
+    }
 
-      for (var i of data) {
-        this.users[i.userId] = i.color;
-        this.insertCSS(i.userId, i.color);
-        this.insertWidget(i);
-        this.decorations[i.userId] = [];
-      }
-    });
-    this.socket.emit("channel-join", this.state.meetingCode, (ack) => {
-      console.log("channel Joined", ack);
-    });
-    this.socket.on("selection", (message) => {
-      //change Selection Event
-      if (
-        message.meetingCode === this.props.meetingCode &&
-        message.userId !== this.state.clientId
-      ) {
-        this.changeSeleciton(message);
-        this.changeWidgetPosition(message);
-      }
-    });
-    this.setState({ isFirstTime: false });
   }
 
   showValue = (value, event) => {
-    debugger;
     if (this.handleStuff === false) {
       this.handleStuff = true;
       return;
     } else {
       // false if user input
       const text = value;
+      this.props.setCode(text);
       this.setState({ code: text }, () => {
         const message = {
           meetingCode: this.props.meetingCode,
