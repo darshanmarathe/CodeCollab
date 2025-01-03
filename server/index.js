@@ -141,9 +141,9 @@ io.on("connection", (socket) => {
     io.emit("message", message);
   });
 
-  socket.on("drawn", (stroks) => {
-    io.emit("drawn", stroks);
-    console.log("drawn" , stroks.length);
+  socket.on("drawn", (storks) => {
+    console.log("drawn" , storks);
+    io.emit("drawn", storks);
   });
 
   function AddToChannel(coded) {

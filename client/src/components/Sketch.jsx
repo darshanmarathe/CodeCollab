@@ -79,13 +79,16 @@ function Sketch({socket}) {
         strokeColor={strokeColor}
         onStroke={(e) => {
           console.log(e);
-          if (socket && e != null && e.length > 0) {
+          if (socket && e != null) {
             socket.emit("drawn", e);
           }
         }}
-        onChange={(e) => {
-        
-        }}
+        // onChange={(e) => {
+        //   console.log(e);
+        //   if (socket && e != null && e.length > 0) {
+        //     socket.emit("drawn", e);
+        //   }
+        // }}
       />
       <div className="flex flex-col w-10">
         <div className="w-auto h-9 rounded-full overflow-hidden">
