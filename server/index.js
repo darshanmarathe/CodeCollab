@@ -46,6 +46,7 @@ function CreateUser(userId, userCount) {
     color: colors[userCount],
   };
 }
+
 app.use(cors());
 
 var ServeFile = function (req, res) {
@@ -140,6 +141,7 @@ io.on("connection", (socket) => {
     // AddToChannel(message);
     io.emit("message", message);
   });
+
 
   socket.on("drawn", (storks) => {
     console.log("drawn" , storks);

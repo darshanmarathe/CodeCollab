@@ -2,32 +2,34 @@ import React, { useState, useRef, useEffect } from "react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
 import { IconEraser, IconPencil, IconRestore } from "@tabler/icons-react";
 
-
-
 const iconButton =
   "p-2 rounded-xl border cursor-pointer dark:border-accent-900 dark:text-accent-200";
 const defaultIconButton =
   "bg-transparent text-accent-900 hover:bg-accent-100 dark:hover:bg-accent-800";
 
-function Sketch({socket}) {
+function Sketch({ socket, strocks , onStroked}) {
   const [eraser, setEraser] = useState(false);
   const [clientid, setClientId] = useState(null);
- 
+
   const ref = useRef(null);
 
   const [strokeColor, setStrokeColor] = useState("#6497eb");
-
+  useEffect(() => {
+    console.log('component did mount....' , strocks)
+    if (strocks.paths.length > 0) {
+      ref.current.loadPaths(strocks);
+    }
+  }, [strocks]);
 
   useEffect(() => {
     if (socket) {
       setClientId(socket.id);
       socket.on("connection", () => {
         console.log("connection ::", socket.id);
-    
       });
 
       socket.on("drawn", (stroks) => {
-        console.log(stroks)
+        console.log(stroks);
         if (ref.current) {
           ref.current.loadPaths(stroks);
         }
@@ -69,10 +71,10 @@ function Sketch({socket}) {
 
   return (
     <div className="reset-wrapper flex gap-4">
-    <h1>ClientID :: {clientid}</h1>
+      <h1>ClientID :: {clientid}</h1>
       <ReactSketchCanvas
         ref={ref}
-        canvasColor="transparent"    
+        canvasColor="transparent"
         height="400px"
         width="1000px"
         strokeWidth={4}
@@ -81,6 +83,7 @@ function Sketch({socket}) {
           console.log(e);
           if (socket && e != null) {
             socket.emit("drawn", e);
+            onStroked(e)
           }
         }}
         // onChange={(e) => {

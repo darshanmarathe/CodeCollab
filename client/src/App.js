@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import LanguagePicker from "./components/LanguagePicker";
 import EditorWrapper from "./components/Editor";
@@ -21,11 +21,9 @@ function App() {
     return result;
   }
 
-  const [code , setCode] = useState(
-    "// write code here..."
-  );
-  const [decorations , setDecoration] = useState({});
-  const [widgets , setWidgets] = useState({});
+  const [code, setCode] = useState("// write code here...");
+  const [decorations, setDecoration] = useState({});
+  const [strocks, setStrocks] = useState({ paths: [] });
 
   const [loggedinUsers, setLoggedinUser] = useState([]);
   const [language, setLanguage] = useState("javascript");
@@ -107,6 +105,15 @@ function App() {
       setSocket(socket);
     }
   }
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("drawn", (stroks) => {
+        console.log("from app to be drawn", stroks);
+        setStrocks(stroks);
+      });
+    }
+  }, [socket]);
 
   return (
     <>
@@ -229,9 +236,8 @@ function App() {
                   aria-controls="pills-home"
                   aria-selected="true"
                   onClick={() => {
-                    console.log(code)
-                    setTab("code")
-                    
+                    console.log(code);
+                    setTab("code");
                   }}
                 >
                   Code
@@ -288,12 +294,10 @@ function App() {
                       theme={theme}
                       user={CurrentUser}
                       decorations={decorations}
-                      widgets={widgets}
                       setCode={(t) => {
-                        setCode(t.text)
-                        setDecoration(t.decorations)
-                        console.log(code)
-              
+                        setCode(t.text);
+                        setDecoration(t.decorations);
+                        console.log(code);
                       }}
                       onUserConnect={(name) => {
                         if (CurrentUser === "NA") {
@@ -338,7 +342,16 @@ function App() {
                   role="tabpanel"
                   aria-labelledby="pills-contact-tab"
                 >
-                  {tab === "sketch" && <Sketch socket={socket} />}
+                  {tab === "sketch" && (
+                    <Sketch
+                      onStroked={(e) => {
+                        console.log(e , "from strocks00");
+                        setStrocks(e)
+                      }}
+                      socket={socket}
+                      strocks={strocks}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -346,7 +359,7 @@ function App() {
         </div>
       </div>
     </>
-  );
+  ); 
 }
 
 export default App;

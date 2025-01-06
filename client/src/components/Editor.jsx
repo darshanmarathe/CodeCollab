@@ -29,7 +29,6 @@ export default class EditorWrapper extends Component {
       this.socket = this.props.socket;
     }
     this.decorations = this.props.decorations;
-    this.contentWidgets = this.props.widgets;
     this.showValue.bind(this);
     this.handleNewUserMessage.bind(this);
 
