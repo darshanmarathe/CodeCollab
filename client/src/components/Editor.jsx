@@ -123,8 +123,8 @@ export default class EditorWrapper extends Component {
     const e = data.event;
     var selectionArray = [];
     if (
-      e.selection.startColumn == e.selection.endColumn &&
-      e.selection.startLineNumber == e.selection.endLineNumber
+      e.selection.startColumn === e.selection.endColumn &&
+      e.selection.startLineNumber === e.selection.endLineNumber
     ) {
       //if cursor - 커서일 때
       e.selection.endColumn++;
@@ -221,6 +221,7 @@ export default class EditorWrapper extends Component {
           if (this.props.language !== channel.language) {
             this.props.onLanguageChanged(channel.language);
           }
+          this.props.setStrocks(channel.strokes)
               
         }
         console.info(channel.users)

@@ -7,7 +7,7 @@ const iconButton =
 const defaultIconButton =
   "bg-transparent text-accent-900 hover:bg-accent-100 dark:hover:bg-accent-800";
 
-function Sketch({ socket, strocks , onStroked}) {
+function Sketch({ socket, strocks , onStroked , meetingCode}) {
   const [eraser, setEraser] = useState(false);
   const [clientid, setClientId] = useState(null);
 
@@ -16,7 +16,7 @@ function Sketch({ socket, strocks , onStroked}) {
   const [strokeColor, setStrokeColor] = useState("#6497eb");
   useEffect(() => {
     console.log('component did mount....' , strocks)
-    if (strocks.paths.length > 0) {
+    if ((strocks.paths.length ?? 0) > 0) {
       ref.current.loadPaths(strocks);
     }
   }, [strocks]);
@@ -27,6 +27,13 @@ function Sketch({ socket, strocks , onStroked}) {
       socket.on("connection", () => {
         console.log("connection ::", socket.id);
       });
+
+      // socket.on("channel", (chan) => {
+      //   console.log("channel strokes Sketch", chan);
+      //   if (ref.current) {
+      //     ref.current.loadPaths(chan.strokes);
+      //   }
+      // });
 
       socket.on("drawn", (stroks) => {
         console.log(stroks);
@@ -82,7 +89,7 @@ function Sketch({ socket, strocks , onStroked}) {
         onStroke={(e) => {
           console.log(e);
           if (socket && e != null) {
-            socket.emit("drawn", e);
+            socket.emit("drawn", e, meetingCode);
             onStroked(e)
           }
         }}

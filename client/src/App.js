@@ -112,6 +112,11 @@ function App() {
         console.log("from app to be drawn", stroks);
         setStrocks(stroks);
       });
+
+      socket.on("channel", (chan) => {
+        console.log("channel strokes App.js", chan);
+        setStrocks(chan.strokes);
+      });
     }
   }, [socket]);
 
@@ -236,7 +241,6 @@ function App() {
                   aria-controls="pills-home"
                   aria-selected="true"
                   onClick={() => {
-                    console.log(code);
                     setTab("code");
                   }}
                 >
@@ -304,6 +308,11 @@ function App() {
                           setCurrentUser(name);
                         }
                       }}
+                      setStrocks={(strokes) => {
+                        if(strokes){
+                          setStrocks(strokes)
+                        }
+                      }}
                       socket={socket}
                       onSetSocket={onSetSocket}
                       onUsersChanged={setUsersChange}
@@ -350,6 +359,7 @@ function App() {
                       }}
                       socket={socket}
                       strocks={strocks}
+                      meetingCode={meetingCode}
                     />
                   )}
                 </div>

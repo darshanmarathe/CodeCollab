@@ -132,7 +132,7 @@ io.on("connection", (socket) => {
   });
   socket.on("coded", (coded) => {
     console.log("coded received", coded);
-    AddToChannel(coded);
+    Add_code_to_channel(coded);
     io.emit("coded", coded);
   });
 
@@ -143,16 +143,29 @@ io.on("connection", (socket) => {
   });
 
 
-  socket.on("drawn", (storks) => {
-    console.log("drawn" , storks);
-    io.emit("drawn", storks);
+  socket.on("drawn", (storks , meetingCode) => {
+    console.log("drawn" , meetingCode);
+    Add_sketch_to_channel(storks , meetingCode)
+    io.emit("drawn", storks , meetingCode);
   });
 
-  function AddToChannel(coded) {
+  function Add_code_to_channel(coded) {
     let chan = STATIC_CHANNELS.find((x) => x.id === coded.meetingCode);
     if (chan) {
       chan.text = coded.text;
     }
+  }
+
+  function Add_sketch_to_channel(sk , meetingCode) {
+    let chan = STATIC_CHANNELS.find((x) => x.id === meetingCode);
+
+    if (chan) {
+      if(chan.strokes == null)
+        chan.strokes = sk;
+      else 
+        chan.strokes.paths =  [...chan.strokes.paths , ...sk.paths]
+    }
+    console.log("Added to channel" , meetingCode )
   }
 
   let chan_to_be_removed = null;
