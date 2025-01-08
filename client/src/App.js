@@ -108,14 +108,18 @@ function App() {
 
   useEffect(() => {
     if (socket) {
-      socket.on("drawn", (stroks) => {
+      socket.on("drawn", (stroks , _meetingCode) => {
         console.log("from app to be drawn", stroks);
+        if(meetingCode === _meetingCode)
         setStrocks(stroks);
       });
 
       socket.on("channel", (chan) => {
         console.log("channel strokes App.js", chan);
-        setStrocks(chan.strokes);
+        if(chan.name === meetingCode)
+        {
+          setStrocks(chan.strokes);
+        }
       });
     }
   }, [socket]);

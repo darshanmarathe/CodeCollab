@@ -35,9 +35,9 @@ function Sketch({ socket, strocks , onStroked , meetingCode}) {
       //   }
       // });
 
-      socket.on("drawn", (stroks) => {
+      socket.on("drawn", (stroks , _meetingCode) => {
         console.log(stroks);
-        if (ref.current) {
+        if (ref.current && meetingCode === _meetingCode) {
           ref.current.loadPaths(stroks);
         }
       });
