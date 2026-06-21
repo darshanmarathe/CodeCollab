@@ -5,6 +5,8 @@ import LanguagePicker from "./components/LanguagePicker";
 import EditorWrapper from "./components/Editor";
 import Sketch from "./components/Sketch";
 import ScreenShare from "./components/ScreenShare";
+import CodeRunner from "./components/CodeRunner";
+import Avatar from "./components/Avatar";
 import supportedLanguages from "./components/common";
 import HeaderComponent from "./components/Header";
 import ConnectionStatus from "./components/ConnectionStatus";
@@ -23,6 +25,15 @@ function App() {
     return result;
   }
 
+  function getRoomFromPath() {
+    const path = window.location.pathname;
+    if (path === "/") return null;
+    const segments = path.split("/").filter(Boolean);
+    if (segments.length === 0) return null;
+    const room = segments[segments.length - 1];
+    return room || null;
+  }
+
   const [code, setCode] = useState("// write code here...");
   const [decorations, setDecoration] = useState({});
   const [strocks, setStrocks] = useState({ paths: [] });
@@ -38,12 +49,10 @@ function App() {
   const [toasts, setToasts] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const meetingCode =
-    window.location.pathname === "/"
-      ? makeId(8)
-      : window.location.pathname.replace("/", "");
-  if (window.location.pathname === "/") {
-    window.location.pathname = "/" + meetingCode;
+  const existingRoom = getRoomFromPath();
+  const meetingCode = existingRoom || makeId(8);
+  if (!existingRoom) {
+    window.history.replaceState(null, "", "/" + meetingCode);
   }
 
   const addToast = useCallback((message, type = "success") => {
@@ -101,18 +110,15 @@ function App() {
   // Keyboard shortcuts
   useEffect(() => {
     function handleKeyDown(e) {
-      // Ctrl+K or Cmd+K -> focus language picker
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
         const langSelect = document.querySelector(".sidebar-select");
         if (langSelect) langSelect.focus();
       }
-      // Ctrl+Shift+C -> copy room link
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === "C") {
         e.preventDefault();
         copyStringToClipboard(window.location.href);
       }
-      // Ctrl+1/2/3 -> switch tabs
       if ((e.ctrlKey || e.metaKey) && e.key === "1") {
         e.preventDefault();
         setTab("code");
@@ -228,7 +234,7 @@ function App() {
 
           <div className="sidebar-section">
             <div className="current-user">
-              <div className="user-dot"></div>
+              <Avatar name={CurrentUser} size={28} />
               <span className="user-name">{CurrentUser}</span>
             </div>
           </div>
@@ -264,10 +270,7 @@ function App() {
             <ul className="users-list">
               {loggedinUsers.map((u) => (
                 <li key={u.userId || u.name} className="user-badge">
-                  <span
-                    className="user-dot"
-                    style={{ backgroundColor: u.color }}
-                  ></span>
+                  <Avatar name={u.name} color={u.color} size={24} />
                   <span className="user-name">{u.name}</span>
                 </li>
               ))}
@@ -314,6 +317,12 @@ function App() {
                 <span className="tab-label">Sketch</span>
                 <span className="tab-shortcut">3</span>
               </button>
+
+              <div className="tab-spacer"></div>
+
+              {tab === "code" && (
+                <CodeRunner code={code} language={language} />
+              )}
             </div>
 
             <div className="content-area">
