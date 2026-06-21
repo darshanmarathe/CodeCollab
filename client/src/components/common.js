@@ -1,172 +1,90 @@
-const supportedLanguages = [{
-    id: 1,
-    name: 'apex'
-}, {
-    id: 2,
-    name: 'azcli'
-}, {
-    id: 3,
-    name: 'bat'
-}, {
-    id: 4,
-    name: 'c'
-}, {
-    id: 5,
-    name: 'clojure'
-}, {
-    id: 6,
-    name: 'coffeescript'
-}, {
-    id: 7,
-    name: 'cpp'
-}, {
-    id: 8,
-    name: 'csharp'
-}, {
-    id: 9,
-    name: 'csp'
-}, {
-    id: 10,
-    name: 'css'
-}, {
-    id: 11,
-    name: 'dockerfile'
-}, {
-    id: 12,
-    name: 'fsharp'
-}, {
-    id: 13,
-    name: 'go'
-}, {
-    id: 14,
-    name: 'graphql'
-}, {
-    id: 15,
-    name: 'handlebars'
-}, {
-    id: 16,
-    name: 'html'
-}, {
-    id: 17,
-    name: 'ini'
-}, {
-    id: 18,
-    name: 'java'
-}, {
-    id: 19,
-    name: 'javascript'
-}, {
-    id: 20,
-    name: 'json'
-}, {
-    id: 21,
-    name: 'kotlin'
-}, {
-    id: 22,
-    name: 'less'
-}, {
-    id: 23,
-    name: 'lua'
-}, {
-    id: 24,
-    name: 'markdown'
-}, {
-    id: 25,
-    name: 'msdax'
-}, {
-    id: 26,
-    name: 'mysql'
-}, {
-    id: 27,
-    name: 'objective-c'
-}, {
-    id: 28,
-    name: 'pascal'
-}, {
-    id: 29,
-    name: 'perl'
-}, {
-    id: 30,
-    name: 'pgsql'
-}, {
-    id: 31,
-    name: 'php'
-}, {
-    id: 32,
-    name: 'plaintext'
-}, {
-    id: 33,
-    name: 'postiats'
-}, {
-    id: 34,
-    name: 'powerquery'
-}, {
-    id: 35,
-    name: 'powershell'
-}, {
-    id: 36,
-    name: 'pug'
-}, {
-    id: 37,
-    name: 'python'
-}, {
-    id: 38,
-    name: 'r'
-}, {
-    id: 39,
-    name: 'razor'
-}, {
-    id: 40,
-    name: 'redis'
-}, {
-    id: 41,
-    name: 'redshift'
-}, {
-    id: 42,
-    name: 'ruby'
-}, {
-    id: 43,
-    name: 'rust'
-}, {
-    id: 44,
-    name: 'sb'
-}, {
-    id: 45,
-    name: 'scheme'
-}, {
-    id: 46,
-    name: 'scss'
-}, {
-    id: 47,
-    name: 'shell'
-}, {
-    id: 48,
-    name: 'sol'
-}, {
-    id: 49,
-    name: 'sql'
-}, {
-    id: 50,
-    name: 'st'
-}, {
-    id: 51,
-    name: 'swift'
-}, {
-    id: 52,
-    name: 'tcl'
-}, {
-    id: 53,
-    name: 'typescript'
-}, {
-    id: 54,
-    name: 'vb'
-}, {
-    id: 55,
-    name: 'xml'
-}, {
-    id: 56,
-    name: 'yaml'
-}];
-
+const supportedLanguages = [
+  { id: 1, name: "abap" },
+  { id: 2, name: "apex" },
+  { id: 3, name: "azcli" },
+  { id: 4, name: "bat" },
+  { id: 5, name: "bicep" },
+  { id: 6, name: "c" },
+  { id: 7, name: "cameligo" },
+  { id: 8, name: "clojure" },
+  { id: 9, name: "coffeescript" },
+  { id: 10, name: "cpp" },
+  { id: 11, name: "csharp" },
+  { id: 12, name: "csp" },
+  { id: 13, name: "css" },
+  { id: 14, name: "cypher" },
+  { id: 15, name: "dart" },
+  { id: 16, name: "dockerfile" },
+  { id: 17, name: "ecl" },
+  { id: 18, name: "elixir" },
+  { id: 19, name: "flow9" },
+  { id: 20, name: "fsharp" },
+  { id: 21, name: "freemarker2" },
+  { id: 22, name: "go" },
+  { id: 23, name: "graphql" },
+  { id: 24, name: "handlebars" },
+  { id: 25, name: "hcl" },
+  { id: 26, name: "html" },
+  { id: 27, name: "ini" },
+  { id: 28, name: "java" },
+  { id: 29, name: "javascript" },
+  { id: 30, name: "json" },
+  { id: 31, name: "julia" },
+  { id: 32, name: "kotlin" },
+  { id: 33, name: "less" },
+  { id: 34, name: "lexon" },
+  { id: 35, name: "liquid" },
+  { id: 36, name: "lua" },
+  { id: 37, name: "m3" },
+  { id: 38, name: "markdown" },
+  { id: 39, name: "mdx" },
+  { id: 40, name: "mips" },
+  { id: 41, name: "msdax" },
+  { id: 42, name: "mysql" },
+  { id: 43, name: "objective-c" },
+  { id: 44, name: "pascal" },
+  { id: 45, name: "pascaligo" },
+  { id: 46, name: "perl" },
+  { id: 47, name: "pgsql" },
+  { id: 48, name: "php" },
+  { id: 49, name: "pla" },
+  { id: 50, name: "plaintext" },
+  { id: 51, name: "postiats" },
+  { id: 52, name: "powerquery" },
+  { id: 53, name: "powershell" },
+  { id: 54, name: "protobuf" },
+  { id: 55, name: "pug" },
+  { id: 56, name: "python" },
+  { id: 57, name: "qsharp" },
+  { id: 58, name: "r" },
+  { id: 59, name: "razor" },
+  { id: 60, name: "redis" },
+  { id: 61, name: "redshift" },
+  { id: 62, name: "restructuredtext" },
+  { id: 63, name: "ruby" },
+  { id: 64, name: "rust" },
+  { id: 65, name: "sb" },
+  { id: 66, name: "scala" },
+  { id: 67, name: "scheme" },
+  { id: 68, name: "scss" },
+  { id: 69, name: "shell" },
+  { id: 70, name: "solidity" },
+  { id: 71, name: "sophia" },
+  { id: 72, name: "sparql" },
+  { id: 73, name: "sql" },
+  { id: 74, name: "st" },
+  { id: 75, name: "swift" },
+  { id: 76, name: "systemverilog" },
+  { id: 77, name: "tcl" },
+  { id: 78, name: "twig" },
+  { id: 79, name: "typescript" },
+  { id: 80, name: "typespec" },
+  { id: 81, name: "vb" },
+  { id: 82, name: "verilog" },
+  { id: 83, name: "wgsl" },
+  { id: 84, name: "xml" },
+  { id: 85, name: "yaml" },
+  { id: 86, name: "zig" },
+];
 
 export default supportedLanguages;

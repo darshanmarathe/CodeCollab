@@ -38,6 +38,76 @@ export default class EditorWrapper extends Component {
   handleEditorDidMount = (editor, monaco) => {
     this._editor = editor;
 
+    if (!monaco.languages.getLanguages().find((l) => l.id === "zig")) {
+      monaco.languages.register({ id: "zig" });
+      monaco.languages.setMonarchTokensProvider("zig", {
+        keywords: [
+          "const", "var", "fn", "pub", "if", "else", "while", "for",
+          "return", "break", "continue", "defer", "errdefer", "try",
+          "catch", "switch", "match", "struct", "enum", "union",
+          "opaque", "extern", "export", "volatile", "threadlocal",
+          "comptime", "test", "undefined", "true", "false", "null",
+        ],
+        typeKeywords: [
+          "bool", "f16", "f32", "f64", "f128",
+          "i8", "i16", "i32", "i64", "i128",
+          "u8", "u16", "u32", "u64", "u128",
+          "usize", "isize", "c_short", "c_ushort", "c_int",
+          "c_uint", "c_long", "c_ulong", "c_longlong", "c_ulonglong",
+          "c_longdouble", "anyerror", "noreturn", "void", "type",
+          "anytype", "anyframe", "anyopaque", "usize",
+        ],
+        operators: [
+          "=", ">", "<", "!", "~", "?", ":",
+          "==", "<=", ">=", "!=", "&&", "||", "++", "--",
+          "+", "-", "*", "/", "%", "&", "|", "^", "<<", ">>",
+          "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=", "<<=", ">>=",
+          "..", "...",
+        ],
+        symbols: /[=><!~?:&|+\-*/^%]+/,
+        tokenizer: {
+          root: [
+            [/[a-zA-Z_]\w*/, {
+              cases: {
+                "@keywords": "keyword",
+                "@typeKeywords": "type",
+                "@default": "identifier",
+              },
+            }],
+            { include: "@whitespace" },
+            [/[{}()[\]]/, "delimiter"],
+            [/@symbols/, {
+              cases: {
+                "@operators": "operator",
+                "@default": "",
+              },
+            }],
+            [/\d*\.\d+([eE][-+]?\d+)?/, "number.float"],
+            [/0[xX][0-9a-fA-F]+/, "number.hex"],
+            [/\d+/, "number"],
+            [/"([^"\\]|\\.)*$/, "string.invalid"],
+            [/"/, { token: "string.quote", bracket: "@open", next: "@string" }],
+            [/\/\/.*$/, "comment"],
+            [/\/\*/, "comment", "@comment"],
+          ],
+          whitespace: [
+            [/[ \t\r\n]+/, "white"],
+          ],
+          comment: [
+            [/[^\/*]+/, "comment"],
+            [/\/\*/, "comment", "@push"],
+            ["\\*/", "comment", "@pop"],
+            [/[/*]/, "comment"],
+          ],
+          string: [
+            [/[^\\"]+/, "string"],
+            [/\\./, "string.escape"],
+            [/"/, { token: "string.quote", bracket: "@close", next: "@pop" }],
+          ],
+        },
+      });
+    }
+
     editor.onDidChangeCursorSelection((e) => {
       this.socket.emit("selection", {
         event: e,

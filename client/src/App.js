@@ -4,12 +4,11 @@ import React, { useEffect, useState } from "react";
 import LanguagePicker from "./components/LanguagePicker";
 import EditorWrapper from "./components/Editor";
 import Sketch from "./components/Sketch";
+import ScreenShare from "./components/ScreenShare";
 import supportedLanguages from "./components/common";
 import HeaderComponent from "./components/Header";
-import { Peer } from "peerjs";
 import { VERSION } from "./version";
 
-let peer;
 function App() {
   function makeId(length) {
     var result = "";
@@ -68,39 +67,6 @@ function App() {
     document.body.removeChild(el);
     setCopy(true);
     setTimeout(() => setCopy(false), 2000);
-  }
-
-  async function Share() {
-    if (peer === undefined) peer = new Peer(meetingCode);
-    peer.on("open", (id) => {
-      console.log("My peer ID is: " + id);
-    });
-    const localStream = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-    });
-
-    const calls = [];
-    loggedinUsers.forEach((u) => {
-      if (u.name !== CurrentUser) calls.push(peer.call(u.name, localStream));
-    });
-  }
-
-  function Watch() {
-    if (peer == undefined) peer = new Peer(CurrentUser);
-    peer.on("open", (id) => {
-      console.log("My peer ID is: " + id);
-    });
-    peer.connect(meetingCode);
-    const remoteVideo = document.getElementById("watch");
-
-    peer.on("call", (call) => {
-      call.answer();
-
-      call.on("stream", (remoteStream) => {
-        remoteVideo.srcObject = remoteStream;
-        remoteVideo.play();
-      });
-    });
   }
 
   function onSetSocket(socket) {
@@ -277,25 +243,11 @@ function App() {
               )}
 
               {tab === "screen" && (
-                <div className="screen-section">
-                  <div className="screen-controls">
-                    <button className="btn-share success" onClick={Share}>
-                      <i className="bi bi-camera-video"></i>
-                      Share Screen
-                    </button>
-                    <button className="btn-share primary" onClick={Watch}>
-                      <i className="bi bi-eye"></i>
-                      Watch
-                    </button>
-                  </div>
-                  <div className="screen-video-card">
-                    <video
-                      id="watch"
-                      style={{ objectFit: "cover" }}
-                      controls
-                    ></video>
-                  </div>
-                </div>
+                <ScreenShare
+                  meetingCode={meetingCode}
+                  loggedinUsers={loggedinUsers}
+                  currentUser={CurrentUser}
+                />
               )}
 
               {tab === "sketch" && (
