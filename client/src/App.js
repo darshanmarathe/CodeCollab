@@ -29,7 +29,7 @@ function App() {
   const [loggedinUsers, setLoggedinUser] = useState([]);
   const [language, setLanguage] = useState("javascript");
   const [CurrentUser, setCurrentUser] = useState("NA");
-  const [copied, setCopy] = useState("bi-clipboard");
+  const [copied, setCopy] = useState(false);
   const [theme, setTheme] = useState("light");
   const [tab, setTab] = useState("code");
   const [socket, setSocket] = useState(null);
@@ -58,20 +58,16 @@ function App() {
   }
 
   function copyStringToClipboard(str) {
-    // Create new element
     var el = document.createElement("textarea");
-    // Set value (string to be copied)
     el.value = str;
-    // Set non-editable to avoid focus and move outside of view
     el.setAttribute("readonly", "");
     el.style = { position: "absolute", left: "-9999px" };
     document.body.appendChild(el);
-    // Select text inside element
     el.select();
-    // Copy text to clipboard
     document.execCommand("copy");
-    // Remove temporary element
     document.body.removeChild(el);
+    setCopy(true);
+    setTimeout(() => setCopy(false), 2000);
   }
 
   async function Share() {
@@ -115,16 +111,14 @@ function App() {
 
   useEffect(() => {
     if (socket) {
-      socket.on("drawn", (stroks , _meetingCode) => {
+      socket.on("drawn", (stroks, _meetingCode) => {
         console.log("from app to be drawn", stroks);
-        if(meetingCode === _meetingCode)
-        setStrocks(stroks);
+        if (meetingCode === _meetingCode) setStrocks(stroks);
       });
 
       socket.on("channel", (chan) => {
         console.log("channel strokes App.js", chan);
-        if(chan.name === meetingCode)
-        {
+        if (chan.name === meetingCode) {
           setStrocks(chan.strokes);
         }
       });
@@ -134,253 +128,194 @@ function App() {
   return (
     <>
       <HeaderComponent />
-      <div className="container-fluid">
-        <div className="row">
-          <nav
-            id="sidebarMenu"
-            className="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse"
-          >
-            <div className="position-sticky pt-3">
-              <ul className="nav flex-column">
-                <li className="nav-item">
-                  <div style={{ width: "100%" }}>
-                    <a
-                      href={"/" + meetingCode}
-                      target="_blank"
-                      className="nav-link"
-                      aria-current="page"
-                    >
-                      {meetingCode}
-                    </a>
-                    <button
-                      title="Copy to clipboard"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        let url = window.location.href;
-                        copyStringToClipboard(url);
-                        setCopy("bi-clipboard-check");
-                      }}
-                      className={"bi " + copied}
-                    ></button>
-                    <br />
-                    me : <b>{CurrentUser}</b>
-                  </div>
-                </li>
-                <li className="nav-item">
-                  <div className="nav-link" href="#">
-                    <LanguagePicker
-                      value={language}
-                      onLanguageChange={(val) => onLanguageChange(val)}
-                    />
-                  </div>
-                </li>
-                <li className="nav-item">
-                  <span> Theme</span>
-                  <select
-                    className="form-select"
-                    value={theme}
-                    onChange={(e) => {
-                      setTheme(e.target.value);
-                    }}
-                  >
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                  </select>
-                </li>
-                <li className="nav-item">
-                  <div className="nav-link" href="#">
-                    <span data-feather="shopping-cart"></span>
-                    Users : <b> {loggedinUsers.length} </b>
-                    <ul>
-                      {loggedinUsers.map((u) => {
-                        return (
-                          <li
-                            style={{
-                              color: u.color,
-                              backgroundColor: "black",
-                              paddingLeft: "5px",
-                            }}
-                          >
-                            {u.name}
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                </li>
-                {/* <li>
-                    Backend
-                    {REACT_APP_BACKEND}
-                  </li> */}
-                <li className="nav-item">
-                  <a
-                    target="_blank"
-                    href="https://github.com/darshanmarathe"
-                    className="nav-link"
-                  >
-                    <span data-feather="shopping-cart"></span>
-                    Developed by :{" "}
-                    <b>
-                      Darshan Marathe!! <br />
-                    </b>
-                  </a>
-                </li>
-
-                <li>UI Version : {VERSION}</li>
-                {/* <li>
-                  Show chat
-                  <input
-                    type="checkbox"
-                    value={showChat}
-                    onChange={(e) => setShowChat(!showChat)}
-                  />
-                </li> */}
-              </ul>
+      <div className="app-layout">
+        <aside className="sidebar">
+          <div className="sidebar-brand">
+            <div className="header-brand-icon">
+              <i className="bi bi-code-slash"></i>
             </div>
-          </nav>
+            <span className="header-brand-text">Interview <span>Pad</span></span>
+          </div>
+          <div className="sidebar-section">
+            <div className="sidebar-label">Room</div>
+            <div className="meeting-code-card">
+              <a
+                href={"/" + meetingCode}
+                target="_blank"
+                rel="noreferrer"
+                className="meeting-code-text"
+              >
+                {meetingCode}
+              </a>
+              <button
+                title="Copy invite link"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  copyStringToClipboard(window.location.href);
+                }}
+                className={"copy-btn" + (copied ? " copied" : "")}
+              >
+                <i className={"bi " + (copied ? "bi-check-lg" : "bi-clipboard")}></i>
+              </button>
+            </div>
+          </div>
 
-          <main className="col-md-9 ms-sm-auto col-lg-10 px-md-4">
-            <ul className="nav nav-pills mb-3" id="pills-tab" role="tablist">
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link active"
-                  id="pills-home-tab"
-                  data-bs-toggle="pill"
-                  data-bs-target="#pills-home"
-                  type="button"
-                  role="tab"
-                  aria-controls="pills-home"
-                  aria-selected="true"
-                  onClick={() => {
-                    setTab("code");
-                  }}
-                >
-                  Code
-                </button>
-              </li>
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link"
-                  id="pills-profile-tab"
-                  data-bs-toggle="pill"
-                  data-bs-target="#pills-profile"
-                  type="button"
-                  role="tab"
-                  aria-controls="pills-profile"
-                  aria-selected="false"
-                  onClick={() => setTab("screen")}
-                >
-                  Screen
-                </button>
-              </li>
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link"
-                  id="pills-contact-tab"
-                  data-bs-toggle="pill"
-                  data-bs-target="#pills-contact"
-                  type="button"
-                  role="tab"
-                  aria-controls="pills-contact"
-                  aria-selected="false"
-                  onClick={() => setTab("sketch")}
-                >
-                  Sketch
-                </button>
-              </li>
-            </ul>
+          <div className="sidebar-section">
+            <div className="current-user">
+              <div className="user-dot"></div>
+              <span className="user-name">{CurrentUser}</span>
+            </div>
+          </div>
 
-            <div
-              className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
-              id="codeCont"
+          <div className="sidebar-section">
+            <div className="sidebar-label">Language</div>
+            <LanguagePicker
+              value={language}
+              onLanguageChange={(val) => onLanguageChange(val)}
+            />
+          </div>
+
+          <div className="sidebar-section">
+            <div className="sidebar-label">Theme</div>
+            <select
+              className="sidebar-select"
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
             >
-              <div className="tab-content" id="pills-tabContent">
-                <div
-                  className="tab-pane fade show active"
-                  id="pills-home"
-                  role="tabpanel"
-                  aria-labelledby="pills-home-tab"
-                >
-                  {tab === "code" && (
-                    <EditorWrapper
-                      language={language}
-                      meetingCode={meetingCode}
-                      code={code}
-                      theme={theme}
-                      user={CurrentUser}
-                      decorations={decorations}
-                      setCode={(t) => {
-                        setCode(t.text);
-                        setDecoration(t.decorations);
-                        console.log(code);
-                      }}
-                      onUserConnect={(name) => {
-                        if (CurrentUser === "NA") {
-                          setCurrentUser(name);
-                        }
-                      }}
-                      setStrocks={(strokes) => {
-                        if(strokes){
-                          setStrocks(strokes)
-                        }
-                      }}
-                      socket={socket}
-                      onSetSocket={onSetSocket}
-                      onUsersChanged={setUsersChange}
-                      onLanguageChanged={setLanguage}
-                    />
-                  )}
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="pills-profile"
-                  role="tabpanel"
-                  aria-labelledby="pills-profile-tab"
-                >
-                  {tab === "screen" && (
-                    <div>
-                      <button className="btn btn-success" onClick={Share}>
-                        Share
-                      </button>
-                      <button className="btn btn-primary" onClick={Watch}>
-                        Watch
-                      </button>
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
 
-                      <video
-                        id="watch"
-                        width="1000"
-                        style={{ objectFit: "cover" }}
-                        height="500"
-                        controls
-                      ></video>
-                    </div>
-                  )}
-                </div>
-                <div
-                  className="tab-pane fade"
-                  id="pills-contact"
-                  role="tabpanel"
-                  aria-labelledby="pills-contact-tab"
-                >
-                  {tab === "sketch" && (
-                    <Sketch
-                      onStroked={(e) => {
-                        console.log(e , "from strocks00");
-                        setStrocks(e)
-                      }}
-                      socket={socket}
-                      strocks={strocks}
-                      meetingCode={meetingCode}
-                    />
-                  )}
-                </div>
-              </div>
+          <div className="sidebar-section">
+            <div className="sidebar-label">
+              Collaborators
+              <span className="badge">{loggedinUsers.length}</span>
             </div>
-          </main>
+            <ul className="users-list">
+              {loggedinUsers.map((u) => (
+                <li key={u.userId || u.name} className="user-badge">
+                  <span
+                    className="user-dot"
+                    style={{ backgroundColor: u.color }}
+                  ></span>
+                  <span className="user-name">{u.name}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="sidebar-footer">
+            <a
+              href="https://github.com/darshanmarathe"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <i className="bi bi-person-circle"></i>
+              Darshan Marathe
+            </a>
+            <div className="sidebar-version">UI v{VERSION}</div>
+          </div>
+        </aside>
+
+        <div className="main-content">
+          <div className="container-fluid">
+            <div className="tab-bar">
+              <button
+                className={"tab-btn" + (tab === "code" ? " active" : "")}
+                onClick={() => setTab("code")}
+              >
+                <i className="bi bi-code-slash"></i>
+                Code
+              </button>
+              <button
+                className={"tab-btn" + (tab === "screen" ? " active" : "")}
+                onClick={() => setTab("screen")}
+              >
+                <i className="bi bi-display"></i>
+                Screen
+              </button>
+              <button
+                className={"tab-btn" + (tab === "sketch" ? " active" : "")}
+                onClick={() => setTab("sketch")}
+              >
+                <i className="bi bi-pencil"></i>
+                Sketch
+              </button>
+            </div>
+
+            <div className="content-area">
+              {tab === "code" && (
+                <div className="editor-container">
+                  <EditorWrapper
+                    language={language}
+                    meetingCode={meetingCode}
+                    code={code}
+                    theme={theme}
+                    user={CurrentUser}
+                    decorations={decorations}
+                    setCode={(t) => {
+                      setCode(t.text);
+                      setDecoration(t.decorations);
+                    }}
+                    onUserConnect={(name) => {
+                      if (CurrentUser === "NA") {
+                        setCurrentUser(name);
+                      }
+                    }}
+                    setStrocks={(strokes) => {
+                      if (strokes) {
+                        setStrocks(strokes);
+                      }
+                    }}
+                    socket={socket}
+                    onSetSocket={onSetSocket}
+                    onUsersChanged={setUsersChange}
+                    onLanguageChanged={setLanguage}
+                  />
+                </div>
+              )}
+
+              {tab === "screen" && (
+                <div className="screen-section">
+                  <div className="screen-controls">
+                    <button className="btn-share success" onClick={Share}>
+                      <i className="bi bi-camera-video"></i>
+                      Share Screen
+                    </button>
+                    <button className="btn-share primary" onClick={Watch}>
+                      <i className="bi bi-eye"></i>
+                      Watch
+                    </button>
+                  </div>
+                  <div className="screen-video-card">
+                    <video
+                      id="watch"
+                      style={{ objectFit: "cover" }}
+                      controls
+                    ></video>
+                  </div>
+                </div>
+              )}
+
+              {tab === "sketch" && (
+                <div className="sketch-section">
+                  <Sketch
+                    onStroked={(e) => {
+                      setStrocks(e);
+                    }}
+                    socket={socket}
+                    strocks={strocks}
+                    meetingCode={meetingCode}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </>
-  ); 
+  );
 }
 
 export default App;
