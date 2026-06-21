@@ -579,6 +579,25 @@
 }
 
 /* ============================================
+   CHAT WIDGET FIXES
+   ============================================ */
+.rw-widget-container {
+  z-index: 50 !important;
+}
+
+@media (max-width: 768px) {
+  .rw-widget-container {
+    bottom: 80px !important;
+    right: 16px !important;
+    max-width: calc(100vw - 32px) !important;
+  }
+
+  .rw-conversation-container {
+    max-height: 50vh !important;
+  }
+}
+
+/* ============================================
    SKETCH
    ============================================ */
 .sketch-section {
@@ -668,6 +687,197 @@
 }
 
 /* ============================================
+   CONNECTION STATUS
+   ============================================ */
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--sidebar-text);
+}
+
+.connection-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.connection-label {
+  font-weight: 500;
+}
+
+/* ============================================
+   TOAST NOTIFICATIONS
+   ============================================ */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.toast-notification {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: white;
+  box-shadow: var(--shadow-lg);
+  transition: all 300ms ease;
+}
+
+.toast-notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast-notification.hide {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.toast-notification.success {
+  background: #10b981;
+}
+
+.toast-notification.error {
+  background: #ef4444;
+}
+
+.toast-notification.info {
+  background: var(--primary);
+}
+
+.toast-notification.warning {
+  background: #f59e0b;
+}
+
+.toast-notification i {
+  font-size: 16px;
+}
+
+/* ============================================
+   ERROR BOUNDARY
+   ============================================ */
+.error-boundary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--surface-alt);
+}
+
+.error-boundary-card {
+  text-align: center;
+  max-width: 480px;
+  padding: 40px 32px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+.error-boundary-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  background: #fef2f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ef4444;
+  font-size: 28px;
+}
+
+.error-boundary-card h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0 0 8px;
+}
+
+.error-boundary-message {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin: 0 0 24px;
+}
+
+.error-boundary-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ============================================
+   KEYBOARD SHORTCUT HINTS
+   ============================================ */
+.sidebar-hint {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-muted);
+  opacity: 0.6;
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.tab-shortcut {
+  font-size: 10px;
+  font-weight: 600;
+  color: inherit;
+  opacity: 0.4;
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: 4px;
+}
+
+.header-link.copied {
+  color: #34d399;
+}
+
+/* ============================================
+   MOBILE SIDEBAR TOGGLE
+   ============================================ */
+.mobile-sidebar-toggle {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 300;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.mobile-sidebar-toggle:hover {
+  background: var(--primary-hover);
+  transform: scale(1.05);
+}
+
+/* ============================================
    RESPONSIVE
    ============================================ */
 @media (max-width: 768px) {
@@ -677,6 +887,7 @@
 
   .sidebar.open {
     transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
   }
 
   .app-header {
@@ -685,5 +896,216 @@
 
   .main-content {
     margin-left: 0;
+  }
+
+  .mobile-sidebar-toggle {
+    display: flex;
+  }
+
+  .tab-label {
+    display: none;
+  }
+
+  .tab-shortcut {
+    display: none;
+  }
+
+  .tab-btn {
+    padding: 8px 12px;
+  }
+
+  .toast-container {
+    bottom: 80px;
+    right: 16px;
+    left: 16px;
+  }
+
+  .toast-notification {
+    width: 100%;
+  }
+
+  .screen-section {
+    padding: 16px;
+  }
+
+  .sketch-section {
+    padding: 16px;
+    flex-direction: column;
+  }
+
+  .sketch-toolbar {
+    flex-direction: row;
+    align-self: stretch;
+  }
+
+  .sketch-divider {
+    width: 1px;
+    height: auto;
+    margin: 0 4px;
+  }
+}
+
+/* ============================================
+   TAB SPACER
+   ============================================ */
+.tab-spacer {
+  flex: 1;
+}
+
+/* ============================================
+   AVATAR
+   ============================================ */
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 11px;
+  color: #fff;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* ============================================
+   CODE RUNNER
+   ============================================ */
+.code-runner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.run-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.run-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.run-btn:active {
+  transform: translateY(0);
+}
+
+.run-btn.running {
+  background: var(--warning);
+  cursor: default;
+}
+
+.run-btn.running:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.run-btn i {
+  font-size: 14px;
+}
+
+.runner-output {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 260px;
+  height: 220px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.runner-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.runner-header span {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.runner-close {
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+
+.runner-close:hover {
+  background: var(--surface-hover);
+  color: var(--text);
+}
+
+.runner-body {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 16px;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.runner-line {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.runner-line.error {
+  color: var(--danger);
+}
+
+.runner-line.warn {
+  color: var(--warning);
+}
+
+.runner-line.info {
+  color: var(--accent);
+}
+
+.runner-output iframe {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .runner-output {
+    left: 0;
+    height: 180px;
+  }
+
+  .run-btn span {
+    display: none;
   }
 }

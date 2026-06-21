@@ -3,7 +3,6 @@ import { ReactSketchCanvas } from "react-sketch-canvas";
 
 function Sketch({ socket, strocks, onStroked, meetingCode }) {
   const [eraser, setEraser] = useState(false);
-  const [clientid, setClientId] = useState(null);
 
   const ref = useRef(null);
 
@@ -16,7 +15,6 @@ function Sketch({ socket, strocks, onStroked, meetingCode }) {
 
   useEffect(() => {
     if (socket) {
-      setClientId(socket.id);
       socket.on("connection", () => {
         console.log("connection ::", socket.id);
       });

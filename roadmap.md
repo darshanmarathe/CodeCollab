@@ -1,37 +1,42 @@
 # Interview Pad - Roadmap
 
-## Current State (v1.2.0)
+## Current State (v1.2.1)
 - Real-time collaborative code editor (Monaco)
-- 56 programming languages
+- 86 programming languages (including Zig)
 - Light/Dark theme
 - Sketch canvas with sync
 - Screen sharing (WebRTC/PeerJS)
 - Chat widget
 - Room-based collaboration with anonymous users
+- Error boundaries and toast notifications
+- Connection status indicator
+- Keyboard shortcuts (Ctrl+K, Ctrl+1/2/3, Ctrl+Shift+C)
+- Mobile responsive with sidebar toggle
+- Modular server architecture
 
 ---
 
 ## Phase 1: Polish & Stability
 *Short-term improvements*
 
-- [ ] Add error boundaries for crash recovery
-- [ ] Add loading states and skeleton screens
-- [ ] Improve mobile responsiveness
-- [ ] Add keyboard shortcuts (Ctrl+K for language, etc.)
-- [ ] Add copy room link button in header
-- [ ] Show connection status indicator
-- [ ] Add "copied" toast notification
-- [ ] Fix chat widget positioning on small screens
-- [ ] Add favicon and proper meta tags
+- [x] Add error boundaries for crash recovery
+- [x] Add loading states and skeleton screens
+- [x] Improve mobile responsiveness
+- [x] Add keyboard shortcuts (Ctrl+K for language, etc.)
+- [x] Add copy room link button in header
+- [x] Show connection status indicator
+- [x] Add "copied" toast notification
+- [x] Fix chat widget positioning on small screens
+- [x] Add favicon and proper meta tags
 
 ## Phase 2: User Experience
 *Better collaboration features*
 
-- [ ] Named rooms (e.g., `/room/my-interview`)
-- [ ] User avatars (generated from initials)
+- [x] Named rooms (e.g., `/room/my-interview`)
+- [x] User avatars (generated from initials)
 - [ ] Cursor presence indicators
 - [ ] Follow mode (sync scroll position)
-- [ ] Code execution (run code in browser)
+- [x] Code execution (run code in browser)
 - [ ] File tree / multi-file support
 - [ ] Undo/Redo sync
 - [ ] Syntax error highlights shared
