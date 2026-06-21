@@ -1,11 +1,32 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
-import { IconEraser, IconPencil, IconRestore } from "@tabler/icons-react";
 
 const iconButton =
   "p-2 rounded-xl border cursor-pointer dark:border-accent-900 dark:text-accent-200";
 const defaultIconButton =
   "bg-transparent text-accent-900 hover:bg-accent-100 dark:hover:bg-accent-800";
+
+const IconPencil = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+    <path d="M13.5 6.5l4 4" />
+  </svg>
+);
+
+const IconEraser = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M19 20h-10.5l-4.21 -4.3a1 1 0 0 1 0 -1.41l10 -10a1 1 0 0 1 1.41 0l5 5a1 1 0 0 1 0 1.41l-9.2 9.3" />
+    <path d="M18 13.3l-6.3 -6.3" />
+  </svg>
+);
+
+const IconRestore = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3.06 13a9 9 0 1 0 .49 -4.087" />
+    <path d="M3 4.001v5h5" />
+    <path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+  </svg>
+);
 
 function Sketch({ socket, strocks , onStroked , meetingCode}) {
   const [eraser, setEraser] = useState(false);
@@ -16,7 +37,7 @@ function Sketch({ socket, strocks , onStroked , meetingCode}) {
   const [strokeColor, setStrokeColor] = useState("#6497eb");
   useEffect(() => {
     console.log('component did mount....' , strocks)
-    if ((strocks.paths.length ?? 0) > 0) {
+    if (strocks && (strocks.paths?.length ?? 0) > 0) {
       ref.current.loadPaths(strocks);
     }
   }, [strocks]);
@@ -28,13 +49,6 @@ function Sketch({ socket, strocks , onStroked , meetingCode}) {
         console.log("connection ::", socket.id);
       });
 
-      // socket.on("channel", (chan) => {
-      //   console.log("channel strokes Sketch", chan);
-      //   if (ref.current) {
-      //     ref.current.loadPaths(chan.strokes);
-      //   }
-      // });
-
       socket.on("drawn", (stroks , _meetingCode) => {
         console.log(stroks);
         if (ref.current && meetingCode === _meetingCode) {
@@ -42,7 +56,7 @@ function Sketch({ socket, strocks , onStroked , meetingCode}) {
         }
       });
     }
-  }, [socket]);
+  }, [socket, meetingCode]);
 
   const handleEraserClick = () => {
     setEraser(true);
@@ -93,12 +107,6 @@ function Sketch({ socket, strocks , onStroked , meetingCode}) {
             onStroked(e)
           }
         }}
-        // onChange={(e) => {
-        //   console.log(e);
-        //   if (socket && e != null && e.length > 0) {
-        //     socket.emit("drawn", e);
-        //   }
-        // }}
       />
       <div className="flex flex-col w-10">
         <div className="w-auto h-9 rounded-full overflow-hidden">

@@ -7,6 +7,7 @@ import Sketch from "./components/Sketch";
 import supportedLanguages from "./components/common";
 import HeaderComponent from "./components/Header";
 import { Peer } from "peerjs";
+import { VERSION } from "./version";
 
 let peer;
 function App() {
@@ -48,6 +49,12 @@ function App() {
   function onLanguageChange(lang) {
     const langua = supportedLanguages.find((x) => x.id === parseInt(lang));
     setLanguage(langua.name);
+    if (socket) {
+      socket.emit("language-changed", {
+        meetingCode,
+        language: langua.name,
+      });
+    }
   }
 
   function copyStringToClipboard(str) {
@@ -219,7 +226,7 @@ function App() {
                   </a>
                 </li>
 
-                <li>UI Version : 1.1.0</li>
+                <li>UI Version : {VERSION}</li>
                 {/* <li>
                   Show chat
                   <input

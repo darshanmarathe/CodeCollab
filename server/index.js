@@ -149,10 +149,22 @@ io.on("connection", (socket) => {
     io.emit("drawn", storks , meetingCode);
   });
 
+  socket.on("language-changed", (data) => {
+    console.log("language-changed", data);
+    let chan = STATIC_CHANNELS.find((x) => x.id === data.meetingCode);
+    if (chan) {
+      chan.language = data.language;
+    }
+    io.emit("language-changed", data);
+  });
+
   function Add_code_to_channel(coded) {
     let chan = STATIC_CHANNELS.find((x) => x.id === coded.meetingCode);
     if (chan) {
       chan.text = coded.text;
+      if (coded.language) {
+        chan.language = coded.language;
+      }
     }
   }
 

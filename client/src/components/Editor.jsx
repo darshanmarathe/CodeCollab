@@ -281,6 +281,17 @@ export default class EditorWrapper extends Component {
           this.changeWidgetPosition(message);
         }
       });
+
+      this.socket.on("language-changed", (data) => {
+        if (
+          data.meetingCode === this.props.meetingCode
+        ) {
+          this.setState({ language: data.language });
+          if (this.props.language !== data.language) {
+            this.props.onLanguageChanged(data.language);
+          }
+        }
+      });
       
 
 
